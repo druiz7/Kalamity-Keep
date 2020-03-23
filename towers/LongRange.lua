@@ -3,7 +3,7 @@ local Tower = require("towers.Tower")
 local LongRange = Tower:new()
 
 function LongRange:new(o)
-   o = o or Tower:new(o)
+   o = Tower:new(o)
    setmetatable(o, self)
    self.__index = self
    return o
@@ -28,26 +28,27 @@ function LongRange:attack()
         end
     end)
 
-    local function chaseIt (h, p)
-        if (h.moving == true) then
-            transition.cancel(h.shape);
+    local function chaseIt (hunter, prey)
+        if (hunter.moving == true) then
+            transition.cancel(hunter);
         end
     
-        h.moving = true;
+        hunter.moving = true;
         local V = 0.5 -- V = D / T → T = D / V
-        local t = math.sqrt ((p.shape.x - h.shape.x)^2 + (p.shape.y - h.shape.y)^2 ) / V;
+        local t = math.sqrt ((prey.shape.x - hunter.x)^2 + (prey.shape.y - hunter.y)^2 ) / V;
     
-        transition.to(h.shape, {time=t,x=p.shape.x, y=p.shape.y});
+        transition.to(hunter, {time=t,x=prey.shape.x, y=prey.shape.y});
     end
 
     p.tid = timer.performWithDelay(100, function (e)
         if enemy then
-            chaseIt(self, enemy)
+            chaseIt(p, enemy)
         else
             timer.cancel(p.tid) 
             p:removeSelf
             p = nil
         end
     end, -1);
-    
 end
+
+return LongRange
