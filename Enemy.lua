@@ -15,9 +15,9 @@ end
 --> spawn the enemies
 function Enemy:spawn(xSpawn, ySpawn)
 	--> enemy creation expression
-	self.shape.pp= self;      -- parent pointer to parent object
-	self.shape.tag= self.tag; --“enemy”
-	physics.addBody(self.shape, "kinematic"); 
+	self.enemy.pp= self;      -- parent pointer to parent object
+	self.enemy.tag= self.tag; --“enemy”
+	physics.addBody(self.enemy, "kinematic"); 
 end
 
 
@@ -25,8 +25,8 @@ function Enemy:hit(damageNum)
 	--> function for when the enemy gets hit
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
-		self.shape:removeSelf();
-		self.shape=nil;
+		self.enemy:removeSelf();
+		self.enemy=nil;
 		self = nil;  
 	end
 end
@@ -40,16 +40,16 @@ function Enemy:move(path)
 		while (self.HP > 0) do
 			if (path[i] == 1) then
 				-->transition to the left
-				transition.to(self.shape, {time = 500*self.speed, x=self.shape.x-130, y=self.shape.y})
+				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x-130, y=self.enemy.y})
 			else if (path[i] == 2) then
 				-->transition to the right
-				transition.to(self.shape, {time = 500*self.speed, x=self.shape.x+130, y=self.shape.y})
+				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x+130, y=self.enemy.y})
 			else if (path[i] == 3) then
 				-->transition up
-				transition.to(self.shape, {time = 500*self.speed, x=self.shape.x, y=self.shape.y+100})
+				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y+100})
 			else if (path[i] == 4) then
 				-->transition down
-				transition.to(self.shape, {time = 500*self.speed, x=self.shape.x, y=self.shape.y-100})
+				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y-100})
 			end
 		end
 	end
