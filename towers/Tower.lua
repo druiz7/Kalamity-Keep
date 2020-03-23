@@ -7,6 +7,11 @@ function Tower:new(o)
     return o;
 end
 
+function Tower:getEnemy()
+    local enemy = enemies[math.random(#enemies)]
+    return enemy
+end
+
 function Tower:onFrame()
     if cooldown then return end
     
