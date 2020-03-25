@@ -1,5 +1,5 @@
 -- David Ruiz, Nick Dea, Shuji Mizoguchi
--- Prof Kim
+-- Prof. Kim
 
 display.setStatusBar( display.HiddenStatusBar ) 
 
