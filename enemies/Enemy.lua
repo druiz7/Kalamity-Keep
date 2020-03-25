@@ -21,8 +21,8 @@ function Enemy:spawn(xSpawn, ySpawn)
 end
 
 
+--> function for when the enemy gets hit
 function Enemy:hit(damageNum)
-	--> function for when the enemy gets hit
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
 		self.enemy:removeSelf();
@@ -32,8 +32,8 @@ function Enemy:hit(damageNum)
 end
 
 
+--> make the enemy follow the designated path
 function Enemy:move(path)
-	--> make the enemy follow the designated path
 	--> for the path, pass in an array of 1, 2, 3, and 4's
 	--> the numbers will be based on the paths (1 = left, 2 = right, 3 = up, 4 = down)
 	for i = 1,path do
@@ -53,4 +53,10 @@ function Enemy:move(path)
 			end
 		end
 	end
+end
+
+
+--> get the remaining health of the enemy
+function Enemy:getHealth()
+	return self.HP
 end
