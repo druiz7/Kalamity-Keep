@@ -12,6 +12,8 @@ x.anchorX = -1; x.anchorY=1
 --[[ local e = display.newRect(display.contentCenterX, display.contentCenterY, 130, 100)
 e:setFillColor(1,0,0)
  ]]
+local Grid = display.newGroup()
+
 local vert = 10;
 local vGridlines = display.newGroup();
 
@@ -38,3 +40,5 @@ for j = 1, 9 do
     hGridlines:insert(horizGrid);
 end
 
+Grid:insert(vGridlines);
+Grid:insert(hGridlines);
