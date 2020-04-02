@@ -4,10 +4,9 @@ local physics = require("physics")
 physics.start()
 physics.setGravity (0,0);
 
--- physics.setDrawMode("hybrid")
+physics.setDrawMode("hybrid")
 
-
-local Mage = require("towers.Mage")
+local Archer = require("towers.Archer")
 
 display.setStatusBar( display.HiddenStatusBar ) 
 
@@ -51,10 +50,11 @@ end
 Grid:insert(vGridlines);
 Grid:insert(hGridlines);
 
-local mage1 = Mage:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
-mage1:spawn()
+-- code that tests my longRange class
+local archer = Archer:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
+archer:spawn()
 
-print(mage1.shape.x, mage1.shape.y)
+print(archer.shape.x, archer.shape.y)
 
 local enemy = display.newRect(display.contentCenterX, display.contentCenterY, 150, 150)
 enemy.id = "enemy"
