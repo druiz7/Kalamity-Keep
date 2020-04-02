@@ -21,7 +21,7 @@ function LongRange:attack()
     p:addEventListener("collision", function(event)
         if (event.phase == "began") then
             if event.other.tag == "enemy" then
-                event.other:hit(self.damage)
+                --event.other.pp:hit(self.damage)
                 event.target:removeSelf();
                 event.target = nil;
             end
@@ -41,12 +41,12 @@ function LongRange:attack()
     end
 
     p.tid = timer.performWithDelay(100, function (e)
-        if enemy then
-            chaseIt(p, enemy)
-        else
-            timer.cancel(p.tid) 
-            p:removeSelf
-            p = nil
+        if not (enemy and pcall(function () chaseIt(p, enemy) end)) then
+            if(not p) then 
+                timer.cancel(p.tid) 
+                p:removeSelf()
+                p = nil
+            end
         end
     end, -1);
 end

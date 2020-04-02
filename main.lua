@@ -1,5 +1,13 @@
 -- David Ruiz, Nick Dea, Shuji Mizoguchi
 -- Prof. Kim
+local physics = require("physics")
+physics.start()
+physics.setGravity (0,0);
+
+-- physics.setDrawMode("hybrid")
+
+
+local Mage = require("towers.Mage")
 
 display.setStatusBar( display.HiddenStatusBar ) 
 
@@ -42,3 +50,29 @@ end
 
 Grid:insert(vGridlines);
 Grid:insert(hGridlines);
+
+local mage1 = Mage:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
+mage1:spawn()
+
+print(mage1.shape.x, mage1.shape.y)
+
+local enemy = display.newRect(display.contentCenterX, display.contentCenterY, 150, 150)
+enemy.id = "enemy"
+enemy.tag = "enemy"
+enemy:setFillColor(1,1,0)
+physics.addBody(enemy, "static")
+
+enemy:addEventListener("touch", function(event)
+    if event.phase == "began" then
+      event.target.markX = event.target.x
+      event.target.markY = event.target.y
+    elseif event.phase == "moved" then
+        local x = (event.x - event.xStart) + event.target.markX
+        local y = (event.y - event.yStart) + event.target.markY
+
+        event.target.x = x
+        event.target.y = y
+    end
+  end)
+
+enemy.shape = enemy
