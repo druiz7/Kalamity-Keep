@@ -55,10 +55,10 @@ Grid:insert(hGridlines);
 local archer = Archer:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
 archer:spawn()
 
-local wizard = Wizard:new({posX = 10 + (120*6), posY = 1000 - (95*2)})
+local wizard = Wizard:new({posX = 10 + (120*6), posY = 1010 - (95*2)})
 wizard:spawn()
 
-local enemy = display.newRect(display.contentCenterX, display.contentCenterY, 150, 150)
+local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
 enemy.tag = "enemy"
 enemy:setFillColor(1,1,0)
 physics.addBody(enemy, "static")
@@ -78,7 +78,7 @@ enemy:addEventListener("touch", function(event)
 
 enemy.shape = enemy
 enemy.shape.pp = enemy
-enemy.HP = 10
+enemy.HP = 100
 function enemy:hit(pts)
     self.HP = (self.HP or 1) - pts
     print(self.HP)

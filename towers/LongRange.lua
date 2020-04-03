@@ -9,10 +9,7 @@ function LongRange:new(o)
    return o
 end
 
-function LongRange:attack()
-    local enemy = self:getEnemy();
-    if not enemy then return end
-
+function LongRange:attack(enemy)
     -- sets up projectile to follow and hit enemy
     local p = display.newRect (self.shape.x, self.shape.y,10,10)
     p:setFillColor(unpack(self.projColor))

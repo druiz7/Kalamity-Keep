@@ -1,5 +1,7 @@
 local chars = require("chars.Chars")
-local Tower = {tag="tower", spaceWidth=120, spaceHeight=95, enemies=nil, cooldown=false, posX=display.contentCenterX, posY=display.contentCenterY, range = 1};
+local Tower = {tag="tower", spaceWidth=120, spaceHeight=95, enemies=nil, 
+cooldown=false, posX=display.contentCenterX, posY=display.contentCenterY, 
+scaleFactor = 5, range = 1};
 
 function Tower:new(o)
     o = o or {}
@@ -28,9 +30,10 @@ function Tower:spawnSprite()
     self.sprite.x = self.posX
     self.sprite.y = self.posY
 
-    self.sprite.xScale = 5;
-    self.sprite.yScale = 5;
+    self.sprite.xScale = self.scaleFactor;
+    self.sprite.yScale = self.scaleFactor;
 
+    self.sprite.curSeq = "idle"
     self.sprite:setSequence("idle")
     self.sprite:play()
 end
@@ -50,7 +53,7 @@ function Tower:createRange()
 
         local enemyTriggered = event.other;
         if (event.phase == "began") then
-            print("i see you")
+            print("adding enemy to list")
             -- add enemy to enemies list
             local inTable = false
             for _, enemy in pairs(self.enemies) do
@@ -64,7 +67,7 @@ function Tower:createRange()
                 table.insert(self.enemies, enemyTriggered)
             end
         elseif(event.phase == "ended") then
-            print("where did you go?")
+            print("removing enemy from list")
             -- remove enemy from enemies list
             for i, enemy in pairs(self.enemies) do
                 if(enemy == enemyTriggered) then
@@ -85,15 +88,36 @@ function Tower:getEnemy()
 end
 
 function Tower:enterFrame()
+    -- updates the list of enemies to make sure they are all alive
     for index, enemy in pairs(self.enemies) do 
         if enemy and enemy.pp and (enemy.pp.HP < 1) then
             self.enemies[index] = nil
         end
     end
 
-    if not self.cooldown then
+    -- now gets an enemy and attacks it if possible
+    local enemy = self:getEnemy()
+    if self.cooldown or not enemy then
+        -- sets the sprite to play the animation if it hasnt been and if the tower isnt cooling down
+        if not self.cooldown and self.sprite.curSeq ~= "idle" then 
+            self.sprite.curSeq = "idle"
+            self.sprite:setSequence("idle")
+            self.sprite:play()
+        end
+    else
+        -- rotates the tower if the enemy is infront or behind
+        if enemy.shape.x < self.posX then self.sprite.xScale = -1 * self.scaleFactor
+        else self.sprite.xScale = self.scaleFactor end
+
+        -- sets the sprite to play the animation if it hasnt been
+        if self.sprite.curSeq ~= "attack" then 
+            self.sprite.curSeq = "attack"
+            self.sprite:setSequence("attack")
+            self.sprite:play()
+        end
+
         self.cooldown = true
-        self:attack()
+        self:attack(enemy)
         timer.performWithDelay(self.cooldownTime, function()
             self.cooldown = false 
         end)
