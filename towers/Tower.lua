@@ -37,9 +37,7 @@ function Tower:spawnSprite()
     self.sprite.xScale = self.scaleFactor;
     self.sprite.yScale = self.scaleFactor;
 
-    self.sprite.curSeq = "idle"
-    self.sprite:setSequence("idle")
-    self.sprite:play()
+    self:setSequence("idle")
 end
 
 -- returns true if possible, false otherwise
@@ -62,6 +60,15 @@ function Tower:move(x,y)
     self.rangeSensor.y = y
 
     return true
+end
+
+function Tower:setSequence(name)
+    if(self.sprite.curSeq ~= name) then
+        print("setting sequence to: " .. name)
+        self.sprite.curSeq = name
+        self.sprite:setSequence(name)
+        self.sprite:play()
+    end
 end
 
 function Tower:createRange()
@@ -123,32 +130,23 @@ function Tower:enterFrame()
 
     -- now gets an enemy and attacks it if possible
     local enemy = self:getEnemy()
-    if self.cooldown or not enemy then
-        -- sets the sprite to play the animation if it hasnt been and if the tower isnt cooling down
-        if not self.cooldown and self.sprite.curSeq ~= "idle" then 
-            self.sprite.curSeq = "idle"
-            self.sprite:setSequence("idle")
-            self.sprite:play()
-        end
+    if not enemy then
+        self:setSequence("idle")
     else
         -- rotates the tower if the enemy is infront or behind
         if enemy.shape.x < self.posX then self.sprite.xScale = -1 * self.scaleFactor
         else self.sprite.xScale = self.scaleFactor end
 
-        -- sets the sprite to play the animation if it hasnt been
-        if self.sprite.curSeq ~= "attack" then 
-            self.sprite.curSeq = "attack"
-            self.sprite:setSequence("attack")
-            self.sprite:play()
+        if not self.cooldown then 
+            self:setSequence("attack")
+            self.cooldown = true
+            self:attack(enemy)
+            
+            self.cooldownTimer = timer.performWithDelay(self.cooldownTime, function()
+                self.cooldownTimer = nil
+                self.cooldown = false
+            end)
         end
-
-        self.cooldown = true
-        self:attack(enemy)
-        
-        self.cooldownTimer = timer.performWithDelay(self.cooldownTime, function()
-            self.cooldownTimer = nil
-            self.cooldown = false
-        end)
     end
 end
 
