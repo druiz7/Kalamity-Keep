@@ -4,10 +4,11 @@ local physics = require("physics")
 physics.start()
 physics.setGravity (0,0);
 
-physics.setDrawMode("hybrid")
+--physics.setDrawMode("hybrid")
 
 local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
+local Knight = require("towers.Knight")
 
 display.setStatusBar( display.HiddenStatusBar ) 
 
@@ -17,9 +18,6 @@ y:setFillColor(0,1,1)
 local x = display.newRect(10, 1070, 1560, 900)
 x.anchorX = -1; x.anchorY=1
 
---[[ local e = display.newRect(display.contentCenterX, display.contentCenterY, 130, 100)
-e:setFillColor(1,0,0)
- ]]
 local Grid = display.newGroup()
 
 local vert = 10;
@@ -58,6 +56,11 @@ archer:spawn()
 local wizard = Wizard:new({posX = 10 + (120*6), posY = 1010 - (95*2)})
 wizard:spawn()
 
+
+-- code that tests my shortRange class
+local knight = Knight:new({posX = 120/2 + 20, posY =500 + 20})
+knight:spawn()
+
 local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
 enemy.tag = "enemy"
 enemy:setFillColor(1,1,0)
@@ -84,6 +87,7 @@ function enemy:hit(pts)
     print(self.HP)
 end
 
+-- button uses an event to clear the game
 local clearGame = display.newRect(1920 - 100, 100, 150, 100)
 clearGame:addEventListener("tap", function() 
     Runtime:dispatchEvent({name="clearGame"})

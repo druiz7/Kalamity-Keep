@@ -1,7 +1,7 @@
 local chars = require("chars.Chars")
 local Tower = {tag="tower", spaceWidth=120, spaceHeight=95, enemies=nil, 
 cooldown=false, posX=display.contentCenterX, posY=display.contentCenterY, 
-scaleFactor = 5, range = 1};
+scaleFactor = 6, range = 1};
 
 function Tower:new(o)
     o = o or {}
