@@ -18,9 +18,12 @@ function Tower:spawn()
     self.shape.tag = self.tag
 
     self:createRange()
+    self.shape:toFront()
+
     Runtime:addEventListener("enterFrame", self)
     Runtime:addEventListener("clearGame", self)
-    self.shape:toFront()
+    Runtime:addEventListener("pauseGame", self)
+    Runtime:addEventListener("resumeGame", self)
 end
 
 function Tower:spawnSprite()
@@ -37,6 +40,28 @@ function Tower:spawnSprite()
     self.sprite.curSeq = "idle"
     self.sprite:setSequence("idle")
     self.sprite:play()
+end
+
+-- returns true if possible, false otherwise
+function Tower:move(x,y)
+    local currX = self.posX
+    local currY = self.posY
+
+    spaceSize = math.floor((self.spaceHeight + self.spaceWidth) / 2)
+    local cost = math.floor(math.sqrt((x-currX)^2 + (y-currY)^2)) / spaceSize
+    if(self.stamina < cost) then
+       return false
+    end
+    
+    self.stamina = self.stamina - cost
+
+    self.sprite.x = x
+    self.sprite.y = y
+
+    self.rangeSensor.x = x
+    self.rangeSensor.y = y
+
+    return true
 end
 
 function Tower:createRange()
@@ -130,6 +155,41 @@ function Tower:clearGame()
     Runtime:removeEventListener("clearGame", self)
     self.shape:removeSelf()
     self.rangeSensor:removeSelf()
+    
+    if(self.projs) then
+        for _, proj in pairs(self.projs) do
+            proj:removeSelf()
+        end
+    end
+end
+
+function Tower:pauseGame()
+    self.enemies = {}
+    physics.removeBody(self.rangeSensor)
+
+    if self.sprite.curSeq ~= "idle" then 
+        self.sprite.curSeq = "idle"
+        self.sprite:setSequence("idle")
+        self.sprite:play()
+    end
+
+    if(self.projs) then
+        for _, proj in pairs(self.projs) do
+            --proj:pause()
+        end
+    end
+end
+
+function Tower:resumeGame()
+    physics.addBody(self.rangeSensor, "dynamic")
+    self.rangeSensor.isSensor = true
+    self.rangeSensor.isSleepingAllowed = false
+
+    if(self.projs) then
+        for _, proj in pairs(self.projs) do
+            --proj:resume()
+        end
+    end
 end
 
 return Tower

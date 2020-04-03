@@ -10,17 +10,27 @@ function LongRange:new(o)
 end
 
 function LongRange:attack(enemy)
+    self.projs = self.projs or {}
+
     -- sets up projectile to follow and hit enemy
-    local p = display.newRect (self.shape.x, self.shape.y,10,10)
+    local p = display.newRect (self.shape.x, self.shape.y,50,50)
     p:setFillColor(unpack(self.projColor))
     physics.addBody (p, "dynamic", {isSensor=true})
+    table.insert(self.projs, p)
 
     p:addEventListener("collision", function(event)
         if (event.phase == "began") then
-            if event.other.tag == "enemy" then
+            if event.other == enemy then
                 event.other.pp:hit(self.damage)
                 event.target:removeSelf();
                 event.target = nil;
+
+                -- removes itself from the list of projs
+                for i, proj in pairs(self.projs) do
+                    if proj == p then
+                        self.projs[i] = nil
+                    end
+                end
             end
         end
     end)
