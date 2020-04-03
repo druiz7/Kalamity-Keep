@@ -1,4 +1,5 @@
-local Tower = {tag="tower", spaceWidth=120, spaceHeight=95, enemies={}, cooldown=false, posX=display.contentCenterX, posY=display.contentCenterY, range = 1};
+local chars = require("chars.Chars")
+local Tower = {tag="tower", spaceWidth=120, spaceHeight=95, enemies=nil, cooldown=false, posX=display.contentCenterX, posY=display.contentCenterY, range = 1};
 
 function Tower:new(o)
     o = o or {}
@@ -8,15 +9,30 @@ function Tower:new(o)
 end
 
 function Tower:spawn()
-    self.shape = display.newCircle(self.posX, self.posY, 15)
-    self.shape:setFillColor(unpack(self.selfColor));
+    self:spawnSprite()
 
+    self.shape = self.sprite
     self.shape.pp = self
     self.shape.tag = self.tag
 
     self:createRange()
     Runtime:addEventListener("enterFrame", self)
     self.shape:toFront()
+end
+
+function Tower:spawnSprite()
+    local opt, seqData = chars.getFrames(self.sheetName)
+    local sheet = graphics.newImageSheet("./chars/all.png", opt)
+    
+    self.sprite = display.newSprite(sheet, seqData)
+    self.sprite.x = self.posX
+    self.sprite.y = self.posY
+
+    self.sprite.xScale = 5;
+    self.sprite.yScale = 5;
+
+    self.sprite:setSequence("idle")
+    self.sprite:play()
 end
 
 function Tower:createRange()
@@ -28,9 +44,9 @@ function Tower:createRange()
     self.rangeSensor.isSleepingAllowed = false
     self.rangeSensor.isVisible = false;
 
-
+    self.enemies = {}
     self.rangeSensor:addEventListener("collision", function(event)
-        if(event.other.id ~= "enemy") then return end
+        if(event.other.tag ~= "enemy") then return end
 
         local enemyTriggered = event.other;
         if (event.phase == "began") then
@@ -60,7 +76,6 @@ function Tower:createRange()
 end
 
 function Tower:getEnemy()
-
     local enemy
     if(#self.enemies > 0) then 
         enemy = self.enemies[math.random(#self.enemies)]
@@ -70,13 +85,24 @@ function Tower:getEnemy()
 end
 
 function Tower:enterFrame()
-    if self.cooldown then return end
-    
-    self.cooldown = true
-    self:attack()
-    timer.performWithDelay(self.cooldownTime, function()
-        self.cooldown = false 
-    end)
+    for index, enemy in pairs(self.enemies) do 
+        if enemy and enemy.pp and (enemy.pp.HP < 1) then
+            self.enemies[index] = nil
+        end
+    end
+
+    if not self.cooldown then
+        self.cooldown = true
+        self:attack()
+        timer.performWithDelay(self.cooldownTime, function()
+            self.cooldown = false 
+        end)
+    end
+end
+
+function Tower:removeTowers()
+    Runtime:removeEventListener("enterFrame", self)
+
 end
 
 return Tower

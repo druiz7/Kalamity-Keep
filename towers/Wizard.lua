@@ -1,9 +1,9 @@
 local LongRange = require("towers.LongRange")
 
-local Wizard = LongRange:new({damage=5, coolDownTime=700})
+local Wizard = LongRange:new({sheetName="wizard",damage=5, cooldownTime=1500, projColor = {50/255, 74/255, 168/255}, selfColor= {50/255, 140/255, 168/255}, range=2})
 
 function Wizard:new(o)
-   o = Tower:new(o)
+   o = LongRange:new(o)
    setmetatable(o, self)
    self.__index = self
    return o

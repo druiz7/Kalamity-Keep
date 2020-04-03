@@ -21,7 +21,7 @@ function LongRange:attack()
     p:addEventListener("collision", function(event)
         if (event.phase == "began") then
             if event.other.tag == "enemy" then
-                --event.other.pp:hit(self.damage)
+                event.other.pp:hit(self.damage)
                 event.target:removeSelf();
                 event.target = nil;
             end

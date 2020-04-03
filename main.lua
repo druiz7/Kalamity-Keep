@@ -7,6 +7,7 @@ physics.setGravity (0,0);
 physics.setDrawMode("hybrid")
 
 local Archer = require("towers.Archer")
+local Wizard = require("towers.Wizard")
 
 display.setStatusBar( display.HiddenStatusBar ) 
 
@@ -54,10 +55,10 @@ Grid:insert(hGridlines);
 local archer = Archer:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
 archer:spawn()
 
-print(archer.shape.x, archer.shape.y)
+local wizard = Wizard:new({posX = 10 + (120*6), posY = 1000 - (95*2)})
+wizard:spawn()
 
 local enemy = display.newRect(display.contentCenterX, display.contentCenterY, 150, 150)
-enemy.id = "enemy"
 enemy.tag = "enemy"
 enemy:setFillColor(1,1,0)
 physics.addBody(enemy, "static")
@@ -76,3 +77,9 @@ enemy:addEventListener("touch", function(event)
   end)
 
 enemy.shape = enemy
+enemy.shape.pp = enemy
+enemy.HP = 10
+function enemy:hit(pts)
+    self.HP = (self.HP or 1) - pts
+    print(self.HP)
+end
