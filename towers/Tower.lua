@@ -19,6 +19,7 @@ function Tower:spawn()
 
     self:createRange()
     Runtime:addEventListener("enterFrame", self)
+    Runtime:addEventListener("clearGame", self)
     self.shape:toFront()
 end
 
@@ -124,9 +125,11 @@ function Tower:enterFrame()
     end
 end
 
-function Tower:removeTowers()
+function Tower:clearGame()
     Runtime:removeEventListener("enterFrame", self)
-
+    Runtime:removeEventListener("clearGame", self)
+    self.shape:removeSelf()
+    self.rangeSensor:removeSelf()
 end
 
 return Tower

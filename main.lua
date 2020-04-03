@@ -83,3 +83,12 @@ function enemy:hit(pts)
     self.HP = (self.HP or 1) - pts
     print(self.HP)
 end
+
+local clearGame = display.newRect(1920 - 100, 100, 150, 100)
+clearGame:addEventListener("tap", function() 
+    Runtime:dispatchEvent({name="clearGame"})
+end)
+
+local cg_text = display.newText("Clear", 1920-100, 100)
+cg_text:setFillColor(1,0,0)
+
