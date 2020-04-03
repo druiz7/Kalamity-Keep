@@ -144,8 +144,10 @@ function Tower:enterFrame()
 
         self.cooldown = true
         self:attack(enemy)
-        timer.performWithDelay(self.cooldownTime, function()
-            self.cooldown = false 
+        
+        self.cooldownTimer = timer.performWithDelay(self.cooldownTime, function()
+            self.cooldownTimer = nil
+            self.cooldown = false
         end)
     end
 end
@@ -153,43 +155,35 @@ end
 function Tower:clearGame()
     Runtime:removeEventListener("enterFrame", self)
     Runtime:removeEventListener("clearGame", self)
+    Runtime:removeEventListener("pauseGame", self)
+    Runtime:removeEventListener("resumeGame", self)
     self.shape:removeSelf()
     self.rangeSensor:removeSelf()
-    
-    if(self.projs) then
-        for _, proj in pairs(self.projs) do
-            proj:removeSelf()
-        end
-    end
 end
 
 function Tower:pauseGame()
     self.enemies = {}
     physics.removeBody(self.rangeSensor)
 
+    if self.cooldownTimer then
+        timer.pause(self.cooldownTimer)
+    end
+
     if self.sprite.curSeq ~= "idle" then 
         self.sprite.curSeq = "idle"
         self.sprite:setSequence("idle")
         self.sprite:play()
     end
-
-    if(self.projs) then
-        for _, proj in pairs(self.projs) do
-            --proj:pause()
-        end
-    end
 end
 
 function Tower:resumeGame()
+    if self.cooldownTimer then
+        timer.resume(self.cooldownTimer)
+    end
+
     physics.addBody(self.rangeSensor, "dynamic")
     self.rangeSensor.isSensor = true
     self.rangeSensor.isSleepingAllowed = false
-
-    if(self.projs) then
-        for _, proj in pairs(self.projs) do
-            --proj:resume()
-        end
-    end
 end
 
 return Tower

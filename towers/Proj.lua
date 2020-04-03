@@ -8,22 +8,33 @@ function Proj:new(o)
  end
  
  function Proj:spawn()
+    print(self.enemy.shape.x, self.enemy.shape.y)
     self.shape = display.newRect (self.posX, self.posY,50,50)
     self.shape:setFillColor(unpack(self.color))
     physics.addBody (self.shape, "dynamic", {isSensor=true})
+    self:chase()
+
 
     self.shape:addEventListener("collision", self)
+    Runtime:addEventListener("clearGame", self)
+    Runtime:addEventListener("pauseGame", self)
+    Runtime:addEventListener("resumeGame", self)
+end
 
+function Proj:chase()
     self.shape.tid = timer.performWithDelay(100, function (e) 
-        if not (self.enemy and pcall(function () chaseIt() end)) then
-            if(not self.shape) then 
-                timer.cancel(self.shape.tid) 
-                self.shape:removeSelf()
-                self.shape = nil
+        if not (self.enemy and  pcall(function () self:chaseIt() end) )then
+            if(not self.shape) then
+                pcall(function()
+                    timer.cancel(self.shape.tid) 
+                    self.shape:removeSelf()
+                    self.shape = nil
+                end)
             end
         end
-    end)
- end
+    end, -1)
+end
+
 
 function Proj:chaseIt()
     if (self.shape.moving == true) then
@@ -41,10 +52,29 @@ function Proj:collision(event)
     if (event.phase == "began") then
         if event.other == self.enemy then
             event.other.pp:hit(self.damage)
-            event.target:removeSelf();
-            event.target = nil;
+            self:clearGame()
         end
     end
 end
+
+function Proj:clearGame()
+    self.shape:removeSelf()
+    self.shape = nil
+    Runtime:removeEventListener("clearGame", self)
+    Runtime:removeEventListener("pauseGame", self)
+    Runtime:removeEventListener("resumeGame", self)
+end
+
+function Proj:pauseGame()
+    if (self.shape.moving == true) then
+        transition.cancel(self.shape);
+    end
+    timer.pause(self.shape.tid)
+end
+
+function Proj:resumeGame()
+    timer.resume(self.shape.tid)
+end
+
 
  return Proj
