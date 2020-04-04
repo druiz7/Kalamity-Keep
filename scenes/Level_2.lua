@@ -10,6 +10,10 @@ local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
+local barbarian = require("enemies.barbarian")
+local lizard = require("enemies.lizard")
+local troll = require("enemies.troll")
+
 display.setStatusBar( display.HiddenStatusBar ) 
 
 local y = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
@@ -60,6 +64,15 @@ wizard:spawn()
 -- code that tests my shortRange class
 local knight = Knight:new({posX = 120/2 + 20, posY =500 + 20})
 knight:spawn()
+
+local barbarian = barbarian:new({xSpawn = display.contentCenterX, ySpawn = display.contentCenterY})
+barbarian:spawn()
+
+local lizard = lizard:new({xSpawn = display.contentCenterX-75, ySpawn = display.contentCenterY})
+lizard:spawn()
+
+local troll = troll:new({xSpawn = display.contentCenterX-150, ySpawn = display.contentCenterY})
+troll:spawn()
 
 local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
 enemy.tag = "enemy"
