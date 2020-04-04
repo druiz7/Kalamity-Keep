@@ -4,7 +4,7 @@
 physics.start()
 physics.setGravity (0,0);
 
---physics.setDrawMode("hybrid")
+physics.setDrawMode("hybrid")
 
 local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
@@ -97,13 +97,12 @@ local cg_text = display.newText("Clear", 1920-100, 100)
 cg_text:setFillColor(1,0,0)
 
 -- button pauses the game
-local pg_text = display.newText("Pause", 1920-300, 100)
+local pg_text = display.newText("Pause", 1920-400, 100)
 pg_text:setFillColor(1,0,0)
 
-local pauseGame = display.newRect(1920 - 300, 100, 150, 100)
+local pauseGame = display.newRect(1920 - 400, 100, 200, 100)
 pauseGame:addEventListener("tap", function()
     if(pg_text.text == "Pause") then
-        print("clicks")
         Runtime:dispatchEvent({name="pauseGame"})
         physics.pause()
         pg_text.text = "Resume"

@@ -26,14 +26,14 @@ function chars.getFrames(name)
 
         table.insert(seqData, {name = type, start=an_start, count=animation.length, time=animation.totalDuration})
     end
-
+--[[
     print("Animation Data for: " .. name)
     print("Frame Data: ")
     print(json.encode(frames))
 
     print("SeqData: ")
     print(json.encode(seqData))
-
+ ]]
     return options, seqData 
 end
 
