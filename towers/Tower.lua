@@ -63,10 +63,17 @@ function Tower:move(x,y)
 end
 
 function Tower:setSequence(name)
-    if(self.sprite.curSeq ~= name) then
-        print("setting sequence to: " .. name)
+    if(not self.sprite.paused and self.sprite.curSeq ~= name) then
         self.sprite.curSeq = name
         self.sprite:setSequence(name)
+        self.sprite:play()
+    end
+
+    if(name == "pause") then
+        self.sprite.paused=true
+        self.sprite:pause()
+    elseif(name == "resume") then
+        self.sprite.paused=false
         self.sprite:play()
     end
 end
@@ -160,28 +167,26 @@ function Tower:clearGame()
 end
 
 function Tower:pauseGame()
+    self:setSequence("pause")
+
     self.enemies = {}
     physics.removeBody(self.rangeSensor)
 
     if self.cooldownTimer then
         timer.pause(self.cooldownTimer)
     end
-
-    if self.sprite.curSeq ~= "idle" then 
-        self.sprite.curSeq = "idle"
-        self.sprite:setSequence("idle")
-        self.sprite:play()
-    end
 end
 
 function Tower:resumeGame()
-    if self.cooldownTimer then
-        timer.resume(self.cooldownTimer)
-    end
+    self:setSequence("resume")
 
     physics.addBody(self.rangeSensor, "dynamic")
     self.rangeSensor.isSensor = true
     self.rangeSensor.isSleepingAllowed = false
+
+    if self.cooldownTimer then
+        timer.resume(self.cooldownTimer)
+    end
 end
 
 return Tower

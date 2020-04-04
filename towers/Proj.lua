@@ -8,7 +8,6 @@ function Proj:new(o)
  end
  
  function Proj:spawn()
-    print(self.enemy.shape.x, self.enemy.shape.y)
     self.shape = display.newRect (self.posX, self.posY,50,50)
     self.shape:setFillColor(unpack(self.color))
     physics.addBody (self.shape, "dynamic", {isSensor=true})
