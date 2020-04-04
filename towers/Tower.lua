@@ -63,17 +63,17 @@ function Tower:move(x,y)
 end
 
 function Tower:setSequence(name)
-    if(not self.sprite.paused and self.sprite.curSeq ~= name) then
+    if(name == "pause" or name == "resume") then
+        if(name == "pause") then
+            self.sprite.paused=true
+            self.sprite:pause()
+        else
+            self.sprite.paused=false
+            self.sprite:play()
+        end
+    elseif(not self.sprite.paused and self.sprite.curSeq ~= name) then
         self.sprite.curSeq = name
         self.sprite:setSequence(name)
-        self.sprite:play()
-    end
-
-    if(name == "pause") then
-        self.sprite.paused=true
-        self.sprite:pause()
-    elseif(name == "resume") then
-        self.sprite.paused=false
         self.sprite:play()
     end
 end
@@ -127,13 +127,17 @@ function Tower:getEnemy()
     return enemy
 end
 
-function Tower:enterFrame()
+function Tower:updateEnemies()
     -- updates the list of enemies to make sure they are all alive
     for index, enemy in pairs(self.enemies) do 
         if enemy and enemy.pp and (enemy.pp.HP < 1) then
             self.enemies[index] = nil
         end
     end
+end
+
+function Tower:attackEnemy()
+    if self.sprite.paused then return end
 
     -- now gets an enemy and attacks it if possible
     local enemy = self:getEnemy()
@@ -157,6 +161,21 @@ function Tower:enterFrame()
     end
 end
 
+function Tower:shoudRunThisFrame()
+    local numFrames = 15
+    self.frame = ((self.frame or 1) + 1) % 60
+
+    return (self.frame % numFrames == 0)
+end
+
+function Tower:enterFrame(event)
+    if(not self:shoudRunThisFrame()) then return end
+
+    print(self.frame)
+    self:updateEnemies()
+    self:attackEnemy()
+end
+
 function Tower:clearGame()
     Runtime:removeEventListener("enterFrame", self)
     Runtime:removeEventListener("clearGame", self)
@@ -169,9 +188,10 @@ end
 function Tower:pauseGame()
     self:setSequence("pause")
 
+--[[ -- not needed but kept just in case
     self.enemies = {}
     physics.removeBody(self.rangeSensor)
-
+ ]]
     if self.cooldownTimer then
         timer.pause(self.cooldownTimer)
     end
@@ -180,10 +200,11 @@ end
 function Tower:resumeGame()
     self:setSequence("resume")
 
+--[[ -- not needed but kept just in case
     physics.addBody(self.rangeSensor, "dynamic")
     self.rangeSensor.isSensor = true
     self.rangeSensor.isSleepingAllowed = false
-
+ ]]
     if self.cooldownTimer then
         timer.resume(self.cooldownTimer)
     end
