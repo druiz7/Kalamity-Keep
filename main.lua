@@ -1,6 +1,6 @@
 -- David Ruiz, Nick Dea, Shuji Mizoguchi
 -- Prof. Kim
-local physics = require("physics")
+--[[ local physics = require("physics")
 physics.start()
 physics.setGravity (0,0);
 
@@ -114,4 +114,7 @@ pauseGame:addEventListener("tap", function()
     end
 end)
 
-pg_text:toFront()
+pg_text:toFront() ]]
+local composer = require("composer")
+
+composer.gotoScene("scenes.Main_Menu", {effect = "fade", time = 250})
