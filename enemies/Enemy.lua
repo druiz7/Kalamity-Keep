@@ -2,14 +2,12 @@ local Enemy = {tag = enemy, name='Enemy', HP=1, damage=1, speed=1, path={}, rewa
 
 local chars = require("chars.Chars")
 
-
 function Enemy:new(o)    --constructor
 	o = o or {}; 
 	setmetatable(o, self);
 	self.__index= self;
 	return o;
 end
-
 
 --> spawn the enemies, same way David spawned in the towers
 function Enemy:spawn()
@@ -24,7 +22,6 @@ function Enemy:spawn()
 	Runtime:addEventListener("resume", self)
 	Runtime:addEventListener("clear", self)
 end
-
 
 function Enemy:createSprite(x,y)
 	local opt, seqData = chars.getFrames(self.name)
@@ -41,7 +38,6 @@ function Enemy:createSprite(x,y)
 	self.sprite:play()
 end
 
-
 --> function for when the enemy gets hit
 function Enemy:hit(damageNum)
 	self.HP = self.HP - damageNum
@@ -51,7 +47,6 @@ function Enemy:hit(damageNum)
 		self = nil;  
 	end
 end
-
 
 --> make the enemy follow the designated path
 -- this movement isn't very well done, I will probably be changing this
@@ -77,7 +72,6 @@ function Enemy:move(path)
 	end
 end
 
-
 -- custom event for the enemy dying
 function Enemy:death(event)
 	--something here to give the user money, take health from the user,  other actions for when the enemy either dies or reaches the end
@@ -90,12 +84,10 @@ function Enemy:death(event)
 	self.enemy = nil
 end
 
-
 --> get the remaining health of the enemy
 function Enemy:getHealth()
 	return self.HP
 end
-
 
 -- function to stop the movement of the enemies when the pause button is pressed
 function Enemy:pause()
@@ -104,14 +96,12 @@ function Enemy:pause()
 	transition.pause()
 end
 
-
 -- fuction to resume the movement o the enemies when the resume button is pressed.
 function Enemy:resume()
 	self:setSequence("run")
 
 	transition.resume()
 end
-
 
 function Enemy:clear()
 	Runtime:removeEventListener("pause", self)
