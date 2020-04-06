@@ -10,18 +10,27 @@ local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
+local composer = require("composer");
 
+local scene = composer.newScene()
 
 function scene:create( event )
  
     local sceneGroup = self.view
     display.setStatusBar( display.HiddenStatusBar ) 
+    --Creates a background
+    local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
+    bg:setFillColor(0,1,1)
+    sceneGroup:insert(bg)
 
-    local y = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
-    y:setFillColor(0,1,1)
-    
-    local x = display.newRect(10, 1070, 1560, 900)
-    x.anchorX = -1; x.anchorY=1
+    --Creates the playable area
+    local zone = display.newRect(10, 170, 1560, 900)
+    zone.anchorX = 0; zone.anchorY=0
+    zone.strokeWidth = 4;
+    zone:setFillColor(0,0.4,0);
+    physics.addBody ( zone, "static");
+    zone.isSensor = true;
+    sceneGroup:insert(zone)
 
     local Grid = display.newGroup()
 
@@ -51,60 +60,210 @@ function scene:create( event )
         hGridlines:insert(horizGrid);
     end
 
+    --Creates a 2D array used for logic within the game
+    logArr = {}
+    for L=1, 12 do
+        logArr[L] = {}
+        for H=1, 9 do
+            logArr[L][H] = 0;
+        end
+    end
+
     Grid:insert(vGridlines);
     Grid:insert(hGridlines);
+    sceneGroup:insert(Grid);
+    
+    --Creates the gold count
+    local gold = 500;
+    local goldTxt = display.newText("Gold: " .. gold, 60, 60);
+    sceneGroup:insert(goldTxt);
+    goldTxt.anchorX = 0; goldTxt.anchorY = 0;
+    goldTxt:setFillColor(0,0,0);
 
-    -- code that tests my longRange class
-    local archer = Archer:new({posX = 10 + (120*6), posY = 1070 - (95*9)})
-    archer:spawn()
+    --Creates the buy menu display objects
+    local wizBuy = display.newRect( 1740, 320, 340, 300);
+    local wizBuyTxt = display.newText("Wizard: 150g",1740, 320);
+    sceneGroup:insert(wizBuy);
+    sceneGroup:insert(wizBuyTxt);
+    wizBuyTxt:setFillColor(0,0,0);
+    wizBuy:setStrokeColor(0,0,0);
+    wizBuy.strokeWidth = 4;
 
-    local wizard = Wizard:new({posX = 10 + (120*6), posY = 1010 - (95*2)})
-    wizard:spawn()
+    local kniBuy = display.newRect( 1740, 620, 340, 300);
+    local kniBuyTxt = display.newText("Knight: 50g",1740, 620);
+    sceneGroup:insert(kniBuy);
+    sceneGroup:insert(kniBuyTxt);
+    kniBuyTxt:setFillColor(0,0,0);
+    kniBuy:setStrokeColor(0,0,0);
+    kniBuy.strokeWidth = 4;
 
+    local arcBuy = display.newRect( 1740, 920, 340, 300);
+    local arcBuyTxt = display.newText("Archer: 100g",1740, 920);
+    sceneGroup:insert(arcBuy);
+    sceneGroup:insert(arcBuyTxt);
+    arcBuyTxt:setFillColor(0,0,0);
+    arcBuy:setStrokeColor(0,0,0);
+    arcBuy.strokeWidth = 4;
 
-    -- code that tests my shortRange class
-    local knight = Knight:new({posX = 120/2 + 20, posY =500 + 20})
-    knight:spawn()
+    local clickPosX;
+    local clickPosY;
+    local unitType = "";
 
-    local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
-    enemy.tag = "enemy"
-    enemy:setFillColor(1,1,0)
-    physics.addBody(enemy, "static")
+    local function unitPlacement(event)
+        clickPosX = 0;
+        clickPosY = 0;
+        clickPosX, clickPosY = event.target:contentToLocal(event.x, event.y);
 
-    enemy:addEventListener("touch", function(event)
-        if event.phase == "began" then
-        event.target.markX = event.target.x
-        event.target.markY = event.target.y
-        elseif event.phase == "moved" then
-            local x = (event.x - event.xStart) + event.target.markX
-            local y = (event.y - event.yStart) + event.target.markY
+        --Converts the click into the indicies for a 2D array 
+        clickPosX = clickPosX + 780;  
+        clickPosY = clickPosY + 450;  
+        clickPosX = math.ceil( clickPosX/130 );
+        clickPosY = math.ceil( clickPosY/100 );
 
-            event.target.x = x
-            event.target.y = y
+        --print(clickPosX);
+        --print(clickPosY);
+
+        --Converts the clickPos coordinates back into x,y coordinates
+        local _x, _y = zone:localToContent(-715 + 130*(clickPosX-1), -400 + 100*(clickPosY-1))
+
+        if(unitType == "Wizard" and logArr[clickPosX][clickPosY] == 0)then
+            local wizard = Wizard:new({posX = _x, posY = _y})
+            wizard:spawn()
+            logArr[clickPosX][clickPosY] = 1;
+            unitType = "";
+            zone:removeEventListener("tap", unitPlacement);
         end
-    end)
-
-    enemy.shape = enemy
-    enemy.shape.pp = enemy
-    enemy.HP = 100
-    function enemy:hit(pts)
-        self.HP = (self.HP or 1) - pts
-        print(self.HP)
+        if(unitType == "Knight" and logArr[clickPosX][clickPosY] == 0)then
+            local knight = Knight:new({posX = _x, posY = _y})
+            knight:spawn()
+            logArr[clickPosX][clickPosY] = 1;
+            unitType = "";
+            zone:removeEventListener("tap", unitPlacement);
+        end
+        if(unitType == "Archer" and logArr[clickPosX][clickPosY] == 0)then
+            local archer = Archer:new({posX = _x, posY = _y})
+            archer:spawn()
+            logArr[clickPosX][clickPosY] = 1;
+            unitType = "";
+            zone:removeEventListener("tap", unitPlacement);
+        end
     end
+
+    --Buy button listeners
+    wizBuy:addEventListener("tap", function()
+        if(unitType ~= "") then
+            return;
+        end
+        if(gold >= 150)then
+            gold = gold - 150;
+            goldTxt.text = "Gold: " .. gold;
+            unitType = "Wizard";
+            zone:addEventListener("tap", unitPlacement);
+        end
+    end);
+    kniBuy:addEventListener("tap", function()
+        if(unitType ~= "") then
+            return;
+        end
+        if(gold >= 50)then
+            gold = gold - 50;
+            goldTxt.text = "Gold: " .. gold;
+            unitType = "Knight";
+            zone:addEventListener("tap", unitPlacement);
+        end
+    end);
+    arcBuy:addEventListener("tap", function()
+        if(unitType ~= "") then
+            return;
+        end
+        if(gold >= 100)then
+            gold = gold - 100;
+            goldTxt.text = "Gold: " .. gold;
+            unitType = "Archer";
+            zone:addEventListener("tap", unitPlacement);
+        end
+    end);
+
+    sceneGroup:insert(wizBuy);
+    sceneGroup:insert(wizBuyTxt);
+
+    sceneGroup:insert(kniBuy);
+    sceneGroup:insert(kniBuyTxt);
+
+    sceneGroup:insert(arcBuy);
+    sceneGroup:insert(arcBuyTxt);
+
+    --Creates the castle
+
+    local castle = display.newRect(1440, 470, 130, 300)
+    castle.anchorX = 0; castle.anchorY = 0;
+    castle:setFillColor(0,0,0.4);
+    castle:setStrokeColor(0,0,0);
+    castle.strokeWidth = 4;
+    sceneGroup:insert(castle);
+    castle:toFront();
+
+    for i=4, 6 do
+        logArr[12][i] = 2;
+    end
+ 
+    --Creates the path
+
+    local verticies = {-715,300, -195,300, -195,100, -455,100, -455,-200, -325,-200, -325,-300, -195,-300, 
+                        -195,-400, 455,-400, 455,-100, 325,-100, 325,300, 455,300, 455,0, 715,0,
+                        715,100, 585,100, 585,400, 195,400, 195,-200, 325,-200, 325,-300, -65,-300, 
+                        -65,-200, -195,-200, -195,-100, -325,-100, -325,0, -65,0, -65,400, -715,400}
+    local path = display.newPolygon(725, 570, verticies);
+    path:setFillColor(120/255,90/255,50/255);
+    path:setStrokeColor(0,0,0);
+    path.strokeWidth = 4;
+    sceneGroup:insert(path);
+
+    --Sets the path in the logical array
+    for i = 1, 5 do 
+        logArr[i][8] = -1;
+    end
+    for i = 8, 5, -1 do
+        logArr[5][i] = -1;
+    end
+    for i = 5, 3, -1 do
+        logArr[i][5] = -1;
+    end
+    for i = 5, 3, -1 do
+        logArr[3][i] = -1;
+    end
+    logArr[4][3] = -1; logArr[4][2] = -1; logArr[5][2] = -1;
+    for i = 5, 9 do
+        logArr[i][1] = -1;
+    end
+    for i = 1, 3 do
+        logArr[9][i] = -1;
+    end
+    for i = 3, 8 do
+        logArr[8][i] = -1;
+    end
+    for i = 8, 10 do
+        logArr[i][8] = -1;
+    end
+    for i = 8, 5, -1 do
+        logArr[10][i] = -1;
+    end
+    logArr[11][5] = -1;
 
     -- button uses an event to clear the game
     local clearGame = display.newRect(1920 - 100, 100, 150, 100)
     clearGame:addEventListener("tap", function() 
         Runtime:dispatchEvent({name="clearGame"})
     end)
-
+    sceneGroup:insert(clearGame)
     local cg_text = display.newText("Clear", 1920-100, 100)
     cg_text:setFillColor(1,0,0)
+    sceneGroup:insert(cg_text)
 
     -- button pauses the game
     local pg_text = display.newText("Pause", 1920-300, 100)
     pg_text:setFillColor(1,0,0)
-
+    sceneGroup:insert(pg_text)
     local pauseGame = display.newRect(1920 - 300, 100, 150, 100)
     pauseGame:addEventListener("tap", function()
         if(pg_text.text == "Pause") then
@@ -118,8 +277,12 @@ function scene:create( event )
             pg_text.text = "Pause"
         end
     end)
-
+    sceneGroup:insert(pauseGame)
     pg_text:toFront()
 
 
 end
+
+scene:addEventListener("create", scene)
+
+return scene
