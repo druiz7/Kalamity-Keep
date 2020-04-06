@@ -104,6 +104,7 @@ end
 local clearGame = display.newRect(1920 - 100, 100, 150, 100)
 clearGame:addEventListener("tap", function() 
     Runtime:dispatchEvent({name="clearGame"})
+    Runtime:dispatchEvent({name="clear"})
 end)
 
 local cg_text = display.newText("Clear", 1920-100, 100)
@@ -118,10 +119,12 @@ pauseGame:addEventListener("tap", function()
     if(pg_text.text == "Pause") then
         print("clicks")
         Runtime:dispatchEvent({name="pauseGame"})
+        Runtime:dispatchEvent({name="pause"})
         physics.pause()
         pg_text.text = "Resume"
     else
         Runtime:dispatchEvent({name="resumeGame"})
+        Runtime:dispatchEvent({name="resume"})
         physics.start()
         pg_text.text = "Pause"
     end
