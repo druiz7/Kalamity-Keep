@@ -11,6 +11,11 @@ local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
 local composer = require("composer");
+local barbarian = require("enemies.barbarian")
+local lizard = require("enemies.lizard")
+local troll = require("enemies.troll")
+
+display.setStatusBar( display.HiddenStatusBar ) 
 
 local scene = composer.newScene()
 
@@ -108,6 +113,27 @@ function scene:create( event )
     local clickPosX;
     local clickPosY;
     local unitType = "";
+
+--[[-- code that tests my shortRange class
+    local knight = Knight:new({posX = 120/2 + 20, posY =500 + 20})
+    knight:spawn()
+
+    --code to spawn in the enemies to test
+    local barbarian = barbarian:new({xSpawn = display.contentCenterX, ySpawn = display.contentCenterY})
+    barbarian:spawn()
+
+    local lizard = lizard:new({xSpawn = display.contentCenterX-75, ySpawn = display.contentCenterY})
+    lizard:spawn()
+
+    local troll = troll:new({xSpawn = display.contentCenterX-150, ySpawn = display.contentCenterY})
+    troll:spawn()
+
+    --testing 
+    local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
+    enemy.tag = "enemy"
+    enemy:setFillColor(1,1,0)
+    physics.addBody(enemy, "static")
+ ]]
 
     local function unitPlacement(event)
         clickPosX = 0;

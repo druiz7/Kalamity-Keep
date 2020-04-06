@@ -11,6 +11,9 @@ local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
 local composer = require("composer");
+local barbarian = require("enemies.barbarian")
+local lizard = require("enemies.lizard")
+local troll = require("enemies.troll")
 
 local scene = composer.newScene()
 
@@ -108,6 +111,19 @@ function scene:create( event )
     local clickPosX;
     local clickPosY;
     local unitType = "";
+
+--[[local barbarian = barbarian:new({xSpawn = display.contentCenterX, ySpawn = display.contentCenterY})
+    barbarian:spawn()
+    local lizard = lizard:new({xSpawn = display.contentCenterX-50, ySpawn = display.contentCenterY})
+    lizard:spawn()
+    local troll = troll:new({xSpawn = display.contentCenterX-100, ySpawn = display.contentCenterY})
+    troll:spawn()
+
+    local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
+    enemy.tag = "enemy"
+    enemy:setFillColor(1,1,0)
+    physics.addBody(enemy, "static") ]]
+
 
     local function unitPlacement(event)
         clickPosX = 0;
@@ -254,6 +270,7 @@ function scene:create( event )
     local clearGame = display.newRect(1920 - 100, 100, 150, 100)
     clearGame:addEventListener("tap", function() 
         Runtime:dispatchEvent({name="clearGame"})
+        Runtime:dispatchEvent({name="clear"})
     end)
     sceneGroup:insert(clearGame)
     local cg_text = display.newText("Clear", 1920-100, 100)
@@ -269,10 +286,12 @@ function scene:create( event )
         if(pg_text.text == "Pause") then
             print("clicks")
             Runtime:dispatchEvent({name="pauseGame"})
+            Runtime:dispatchEvent({name="pause"})
             physics.pause()
             pg_text.text = "Resume"
         else
             Runtime:dispatchEvent({name="resumeGame"})
+            Runtime:dispatchEvent({name="resume"})
             physics.start()
             pg_text.text = "Pause"
         end
