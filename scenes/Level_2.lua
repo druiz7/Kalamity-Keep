@@ -60,11 +60,11 @@ archer:spawn()
 local wizard = Wizard:new({posX = 10 + (120*6), posY = 1010 - (95*2)})
 wizard:spawn()
 
-
 -- code that tests my shortRange class
 local knight = Knight:new({posX = 120/2 + 20, posY =500 + 20})
 knight:spawn()
 
+--code to spawn in the enemies to test
 local barbarian = barbarian:new({xSpawn = display.contentCenterX, ySpawn = display.contentCenterY})
 barbarian:spawn()
 
@@ -74,6 +74,7 @@ lizard:spawn()
 local troll = troll:new({xSpawn = display.contentCenterX-150, ySpawn = display.contentCenterY})
 troll:spawn()
 
+--testing 
 local enemy = display.newRect(display.contentCenterX + 300, display.contentCenterY, 150, 150)
 enemy.tag = "enemy"
 enemy:setFillColor(1,1,0)
