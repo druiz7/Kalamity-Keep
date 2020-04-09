@@ -18,9 +18,9 @@ function Enemy:spawn()
 	self.enemy.tag= self.tag; --“enemy”
 	physics.addBody(self.enemy, "kinematic"); 
 
-	Runtime:addEventListener("pause", self)
-	Runtime:addEventListener("resume", self)
-	Runtime:addEventListener("clear", self)
+	Runtime:addEventListener("pauseGame", self)
+	Runtime:addEventListener("resumeGame", self)
+	Runtime:addEventListener("clearGame", self)
 end
 
 function Enemy:createSprite(x,y)
@@ -90,23 +90,23 @@ function Enemy:getHealth()
 end
 
 -- function to stop the movement of the enemies when the pause button is pressed
-function Enemy:pause()
+function Enemy:pauseGame()
 	self:setSequence("idle")
 
 	transition.pause()
 end
 
 -- fuction to resume the movement o the enemies when the resume button is pressed.
-function Enemy:resume()
+function Enemy:resumeGame()
 	self:setSequence("run")
 
 	transition.resume()
 end
 
-function Enemy:clear()
-	Runtime:removeEventListener("pause", self)
-	Runtime:removeEventListener("resume", self)
-	Runtime:removeEventListener("clear", self)
+function Enemy:clearGame()
+	Runtime:removeEventListener("pauseGame", self)
+	Runtime:removeEventListener("resumeGame", self)
+	Runtime:removeEventListener("clearGame", self)
 	self.enemy:removeSelf()
 	self.enemy=nil
 end
