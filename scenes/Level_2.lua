@@ -20,16 +20,18 @@ display.setStatusBar( display.HiddenStatusBar )
 local scene = composer.newScene()
 
 function scene:create( event )
- 
     local sceneGroup = self.view
-    --Creates a background
-    local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
-    bg:setFillColor(0,1,1)
-    sceneGroup:insert(bg)
 
     -- sets up fill
     display.setDefault( "textureWrapX", "repeat" )
     display.setDefault( "textureWrapY", "mirroredRepeat" )
+
+    --Creates a background
+    local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
+    bg.fill = {type="image", filename="chars/tiles/stone.png"}
+    bg.fill.scaleX = 256/ bg.width
+    bg.fill.scaleY = 256/ bg.height
+    sceneGroup:insert(bg)
 
     --Creates the playable area
     local zone = display.newRect(10, 170, 1560, 900)
@@ -228,7 +230,9 @@ function scene:create( event )
 
     local castle = display.newRect(1440, 770, 130, 300)
     castle.anchorX = 0; castle.anchorY = 0;
-    castle:setFillColor(0,0,0.4);
+    castle.fill = {type="image", filename="chars/tiles/wood.png"}
+    castle.fill.scaleX = 256/ castle.width
+    castle.fill.scaleY = 256/ castle.height
     castle:setStrokeColor(0,0,0);
     castle.strokeWidth = 4;
     sceneGroup:insert(castle);
