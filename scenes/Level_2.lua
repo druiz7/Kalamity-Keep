@@ -22,17 +22,22 @@ local scene = composer.newScene()
 function scene:create( event )
  
     local sceneGroup = self.view
-    display.setStatusBar( display.HiddenStatusBar ) 
     --Creates a background
     local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
     bg:setFillColor(0,1,1)
     sceneGroup:insert(bg)
 
+    -- sets up fill
+    display.setDefault( "textureWrapX", "repeat" )
+    display.setDefault( "textureWrapY", "mirroredRepeat" )
+
     --Creates the playable area
     local zone = display.newRect(10, 170, 1560, 900)
     zone.anchorX = 0; zone.anchorY=0
     zone.strokeWidth = 4;
-    zone:setFillColor(0,0.4,0);
+    zone.fill = {type="image", filename="chars/tiles/grass.png"}
+    zone.fill.scaleX = 256/ zone.width
+    zone.fill.scaleY = 256/ zone.height
     physics.addBody ( zone, "static");
     zone.isSensor = true;
     sceneGroup:insert(zone)
@@ -240,7 +245,9 @@ function scene:create( event )
                         650,350, 390,350, 390,-50, 650,-50, 650,-250, 260,-250, 260,450, -130,450, 
                         -130,350, -260,350, -260,-150, -390,-150, -390,-350, -520,-350, -520,-50, -780,-50}
     local path = display.newPolygon(790, 620, verticies);
-    path:setFillColor(120/255,90/255,50/255);
+    path.fill = {type="image", filename="chars/tiles/dirt.png"}
+    path.fill.scaleX = 256/ path.width
+    path.fill.scaleY = 256/ path.height
     path:setStrokeColor(0,0,0);
     path.strokeWidth = 4;
     sceneGroup:insert(path);
