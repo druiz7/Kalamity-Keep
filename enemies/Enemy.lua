@@ -16,11 +16,14 @@ function Enemy:spawn()
 	self.enemy = self.sprite
 	self.enemy.pp= self;      -- parent pointer to parent object
 	self.enemy.tag= self.tag; --“enemy”
+	self.enemy.curX = self.xSpawn
+	self.enemy.curY = self.ySpawn
+
 	physics.addBody(self.enemy, "kinematic"); 
 
-	Runtime:addEventListener("pauseGame", self)
-	Runtime:addEventListener("resumeGame", self)
-	Runtime:addEventListener("clearGame", self)
+	Runtime:addEventListener("pause", self)
+	Runtime:addEventListener("resume", self)
+	Runtime:addEventListener("clear", self)
 end
 
 function Enemy:createSprite(x,y)
@@ -48,26 +51,35 @@ function Enemy:hit(damageNum)
 	end
 end
 
---> make the enemy follow the designated path
--- this movement isn't very well done, I will probably be changing this
+--> take the path made in game logic and use it to move the enemy
 function Enemy:move(path)
-	--> for the path, pass in an array of 1, 2, 3, and 4's
-	--> the numbers will be based on the paths (1 = left, 2 = right, 3 = up, 4 = down)
-	for i = 1,path.length do
-		while (self.HP > 0) do
-			if (path[i] == 1) then
-				-->transition to the left
-				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x-130, y=self.enemy.y})
-			elseif (path[i] == 2) then
-				-->transition to the right
-				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x+130, y=self.enemy.y})
-			elseif (path[i] == 3) then
-				-->transition up
-				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y+100})
-			elseif (path[i] == 4) then
-				-->transition down
-				transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y-100})
-			end
+	while (self.HP > 0) do
+		--> check up
+		if(path[curX][curY-1] ~= path[lastX][lastY]) then
+			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y-100})
+			self.enemy.lastY = self.enemy.curY
+			self.enemy.curY = self.enemy.curY-1
+		end
+
+		--> check left
+		if(path[curX-1][curY] ~= path[lastX][lastY]) then
+			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x-130, y=self.enemy.y})
+			self.enemy.lastX = self.enemy.curX
+			self.enemy.curX = self.enemy.curX - 1
+		end
+
+		--> check down
+		if(path[curX][curY+1] ~= path[lastX][lastY]) then
+			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y+100})
+			self.enemy.lastY = self.enemy.curY
+			self.enemy.curY = self.enemy.curY+1
+		end
+
+		--> check right
+		if(path[curX+1][curY] ~= path[lastX][lastY]) then
+			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x+130, y=self.enemy.y})
+			self.enemy.lastX = self.enemy.curX
+			self.enemy.curX = self.enemy.curX + 1
 		end
 	end
 end
@@ -90,23 +102,23 @@ function Enemy:getHealth()
 end
 
 -- function to stop the movement of the enemies when the pause button is pressed
-function Enemy:pauseGame()
-	self:setSequence("idle")
+function Enemy:pause()
+	self.enemy:pause()
 
 	transition.pause()
 end
 
 -- fuction to resume the movement o the enemies when the resume button is pressed.
-function Enemy:resumeGame()
-	self:setSequence("run")
+function Enemy:resume()
+	self.enemy:play()
 
 	transition.resume()
 end
 
-function Enemy:clearGame()
-	Runtime:removeEventListener("pauseGame", self)
-	Runtime:removeEventListener("resumeGame", self)
-	Runtime:removeEventListener("clearGame", self)
+function Enemy:clear()
+	Runtime:removeEventListener("pause", self)
+	Runtime:removeEventListener("resume", self)
+	Runtime:removeEventListener("clear", self)
 	self.enemy:removeSelf()
 	self.enemy=nil
 end
