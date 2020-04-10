@@ -78,7 +78,7 @@ local function createBg()
 
     --Creates a background
     local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
-    bg.fill = {type = "image", filename = "chars/tiles/stone.png"}
+    bg.fill = {type = "image", filename = "assets/tiles/stone.png"}
     bg.fill.scaleX = 256 / bg.width
     bg.fill.scaleY = 256 / bg.height
     sceneGroup:insert(bg)
@@ -89,7 +89,7 @@ local function createBg()
     zone.anchorY = 0
     zone.strokeWidth = 4
     zone:setStrokeColor(0, 0, 0)
-    zone.fill = {type = "image", filename = "chars/tiles/grass.png"}
+    zone.fill = {type = "image", filename = "assets/tiles/grass.png"}
     zone.fill.scaleX = 256 / zone.width
     zone.fill.scaleY = 256 / zone.height
     physics.addBody(zone, "static")
@@ -133,7 +133,7 @@ local function createBg()
     local castle = display.newRect(1440, 770, 130, 300)
     castle.anchorX = 0
     castle.anchorY = 0
-    castle.fill = {type = "image", filename = "chars/tiles/wood.png"}
+    castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
     castle.fill.scaleX = 256 / castle.width
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
@@ -147,7 +147,7 @@ local function createBg()
         650,350, 390,350, 390,-50, 650,-50, 650,-250, 260,-250, 260,450, -130,450, 
         -130,350, -260,350, -260,-150, -390,-150, -390,-350, -520,-350, -520,-50, -780,-50}
     local path = display.newPolygon(790, 620, verticies);
-    path.fill = {type="image", filename="chars/tiles/dirt.png"}
+    path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
     path.fill.scaleY = 256/ path.height
     path:setStrokeColor(0,0,0);
@@ -189,8 +189,8 @@ local function createTowerBtns()
             y = 320,
             width = 340,
             height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Wizard: 150g",
@@ -206,8 +206,8 @@ local function createTowerBtns()
             y = 620,
             width = 340,
             height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Knight: 50g",
@@ -223,8 +223,8 @@ local function createTowerBtns()
             y = 920,
             width = 340,
             height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Archer: 100g",

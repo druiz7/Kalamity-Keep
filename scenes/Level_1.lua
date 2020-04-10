@@ -78,7 +78,7 @@ local function createBg()
 
     --Creates a background
     local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
-    bg.fill = {type = "image", filename = "chars/tiles/stone.png"}
+    bg.fill = {type = "image", filename = "assets/tiles/stone.png"}
     bg.fill.scaleX = 256 / bg.width
     bg.fill.scaleY = 256 / bg.height
     sceneGroup:insert(bg)
@@ -89,7 +89,7 @@ local function createBg()
     zone.anchorY = 0
     zone.strokeWidth = 4
     zone:setStrokeColor(0, 0, 0)
-    zone.fill = {type = "image", filename = "chars/tiles/grass.png"}
+    zone.fill = {type = "image", filename = "assets/tiles/grass.png"}
     zone.fill.scaleX = 256 / zone.width
     zone.fill.scaleY = 256 / zone.height
     physics.addBody(zone, "static")
@@ -127,13 +127,13 @@ local function createBg()
     zone.grid:insert(vGridlines)
     zone.grid:insert(hGridlines)
     sceneGroup:insert(zone.grid)
-    zone.grid.isVisible = false;
+    zone.grid.isVisible = false
 
     --Creates the castle
     local castle = display.newRect(1440, 470, 130, 300)
     castle.anchorX = 0
     castle.anchorY = 0
-    castle.fill = {type = "image", filename = "chars/tiles/wood.png"}
+    castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
     castle.fill.scaleX = 256 / castle.width
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
@@ -147,7 +147,7 @@ local function createBg()
         715,100, 585,100, 585,400, 195,400, 195,-200, 325,-200, 325,-300, -65,-300, 
         -65,-200, -195,-200, -195,-100, -325,-100, -325,0, -65,0, -65,400, -715,400}
     local path = display.newPolygon(725, 570, verticies);
-    path.fill = {type="image", filename="chars/tiles/dirt.png"}
+    path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
     path.fill.scaleY = 256/ path.height
     path:setStrokeColor(0,0,0);
@@ -189,8 +189,8 @@ local function createTowerBtns()
             y = 320,
             width = 320,
             height = 290,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Wizard: 150g",
@@ -207,8 +207,8 @@ local function createTowerBtns()
             y = 620,
             width = 320,
             height = 290,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Knight: 50g",
@@ -225,8 +225,8 @@ local function createTowerBtns()
             y = 920,
             width = 320,
             height = 290,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Archer: 100g",
@@ -316,6 +316,9 @@ local function setUpLogArray()
         logArr[10][i] = -1
     end
     logArr[11][5] = -1
+
+    local json = require("json")
+    print(json.encode(logArr))
 end
 
 function scene:create(event)

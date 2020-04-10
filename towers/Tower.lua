@@ -1,4 +1,4 @@
-local chars = require("chars.Chars")
+local chars = require("assets.Chars")
 local Tower = {
     tag = "tower",
     spaceWidth = 120,
@@ -36,7 +36,7 @@ end
 
 function Tower:spawnSprite()
     local opt, seqData = chars.getFrames(self.sheetName)
-    local sheet = graphics.newImageSheet("./chars/all.png", opt)
+    local sheet = graphics.newImageSheet("./assets/all.png", opt)
 
     self.sprite = display.newSprite(sheet, seqData)
     self.sprite.x = self.posX

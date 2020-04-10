@@ -2,7 +2,7 @@ local json = require("json")
 
 local chars = {}
 
-local path = system.pathForFile( "./chars/all.json", system.ResourceDirectory );
+local path = system.pathForFile( "./assets/all.json", system.ResourceDirectory );
 local file = io.open( path, "r" );
 local data = file:read( "*a" ); --everything
 io.close( file );

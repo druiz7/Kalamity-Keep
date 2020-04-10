@@ -1,6 +1,6 @@
 local Enemy = {tag = enemy, name='Enemy', HP=1, damage=1, speed=1, path={}, reward=50, xSpawn=0, ySpawn=0};
 
-local chars = require("chars.Chars")
+local chars = require("assets.Chars")
 
 function Enemy:new(o)    --constructor
 	o = o or {}; 
@@ -25,7 +25,7 @@ end
 
 function Enemy:createSprite(x,y)
 	local opt, seqData = chars.getFrames(self.name)
-	local sheet = graphics.newImageSheet("./chars/all.png", opt)
+	local sheet = graphics.newImageSheet("./assets/all.png", opt)
 
 	self.sprite = display.newSprite(sheet, seqData)
 	self.sprite.x = x
