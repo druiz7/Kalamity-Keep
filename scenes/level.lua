@@ -2,6 +2,7 @@
 -- Prof. Kim
 
 local widget = require("widget")
+local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
@@ -20,15 +21,17 @@ local troll = require("enemies.troll")
 local scene = composer.newScene()
 local sceneGroup
 
+local game
+
 local zone
-local logArr
 
 local gold
 local goldTxt
 
-local unitType = ""
 local function zoneHandler(event)
     local zone = event.target
+    local logArr = game.logArr
+
     local clickPosX = 0
     local clickPosY = 0
     clickPosX, clickPosY = zone:contentToLocal(event.x, event.y)
@@ -45,28 +48,30 @@ local function zoneHandler(event)
     --Converts the clickPos coordinates back into x,y coordinates
     local _x, _y = zone:localToContent(-715 + 130 * (clickPosX - 1), -400 + 100 * (clickPosY - 1))
 
-    if (logArr[clickPosX][clickPosY] ~= 0) then return end
+    if(logArr[clickPosX][clickPosY] ~= 0) then return end
 
     -- clicked space is available
-    if (unitType == "Wizard") then
+    if (game.towerType == "Wizard") then
         local wizard = Wizard:new({posX = _x, posY = _y})
         wizard:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
-    elseif (unitType == "Knight") then
+    elseif (game.towerType == "Knight") then
         local knight = Knight:new({posX = _x, posY = _y})
         knight:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
-    elseif (unitType == "Archer") then
+    elseif (game.towerType == "Archer") then
         local archer = Archer:new({posX = _x, posY = _y})
         archer:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
     end
+
+    zone.grid.isVisible = false
 end
 
 local function createBg()
@@ -76,7 +81,7 @@ local function createBg()
 
     --Creates a background
     local bg = display.newRect(display.contentCenterX, display.contentCenterY, 1920, 1080)
-    bg.fill = {type = "image", filename = "chars/tiles/stone.png"}
+    bg.fill = {type = "image", filename = "assets/tiles/stone.png"}
     bg.fill.scaleX = 256 / bg.width
     bg.fill.scaleY = 256 / bg.height
     sceneGroup:insert(bg)
@@ -87,14 +92,14 @@ local function createBg()
     zone.anchorY = 0
     zone.strokeWidth = 4
     zone:setStrokeColor(0, 0, 0)
-    zone.fill = {type = "image", filename = "chars/tiles/grass.png"}
+    zone.fill = {type = "image", filename = "assets/tiles/grass.png"}
     zone.fill.scaleX = 256 / zone.width
     zone.fill.scaleY = 256 / zone.height
     physics.addBody(zone, "static")
     zone.isSensor = true
     sceneGroup:insert(zone)
 
-    local Grid = display.newGroup()
+    zone.grid = display.newGroup()
     local vert = 10
     local vGridlines = display.newGroup()
     local horiz = 170
@@ -122,15 +127,18 @@ local function createBg()
         hGridlines:insert(horizGrid)
     end
 
-    Grid:insert(vGridlines)
-    Grid:insert(hGridlines)
-    sceneGroup:insert(Grid)
+    zone.grid:insert(vGridlines)
+    zone.grid:insert(hGridlines)
+    sceneGroup:insert(zone.grid)
+    zone.grid.isVisible = false
 
     --Creates the castle
-    local castle = display.newRect(1440, 770, 130, 300)
+    local castle = display.newRect(game.castle.x, game.castle.y,
+        game.castle.width, game.castle.height)
+        
     castle.anchorX = 0
     castle.anchorY = 0
-    castle.fill = {type = "image", filename = "chars/tiles/wood.png"}
+    castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
     castle.fill.scaleX = 256 / castle.width
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
@@ -139,12 +147,9 @@ local function createBg()
     castle:toFront()
 
     --Creates the path
-    local verticies = {-780,-150, -650,-150, -650,-450, -260,-450, -260,-250, -130,-250, -130,250, 0,250,
-        0,350, 130,350, 130,-350, 780,-350, 780,50, 520,50, 520,250, 650,250,
-        650,350, 390,350, 390,-50, 650,-50, 650,-250, 260,-250, 260,450, -130,450, 
-        -130,350, -260,350, -260,-150, -390,-150, -390,-350, -520,-350, -520,-50, -780,-50}
-    local path = display.newPolygon(790, 620, verticies);
-    path.fill = {type="image", filename="chars/tiles/dirt.png"}
+    local verticies = game.path.verticies
+    local path = display.newPolygon(game.path.x, game.path.y, verticies);
+    path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
     path.fill.scaleY = 256/ path.height
     path:setStrokeColor(0,0,0);
@@ -164,16 +169,17 @@ local function createTowerBtns()
     }
 
     local function handleButtonEvent(event)
-        if unitType ~= "" then return end
+        if game.towerType ~= "" then return end
 
         local tower = event.target.id
         local towerCost = towerAtr[tower].cost
         if (gold >= towerCost) then
             gold = gold - towerCost
             goldTxt.text = "Gold: " .. gold
-            unitType = tower
+            game.towerType = tower
 
             zone:addEventListener("tap", zoneHandler)
+            zone.grid.isVisible = true
         end
     end
 
@@ -181,55 +187,54 @@ local function createTowerBtns()
         widget.newButton(
         {
             id = "Wizard",
-            x = 1740,
+            x = 1750,
             y = 320,
-            width = 340,
-            height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Wizard: 150g",
             onRelease = handleButtonEvent
         }
     )
+    sceneGroup:insert(wizBtn)
 
     local kniBtn =
         widget.newButton(
         {
             id = "Knight",
-            x = 1740,
+            x = 1750,
             y = 620,
-            width = 340,
-            height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Knight: 50g",
             onRelease = handleButtonEvent
         }
     )
+    sceneGroup:insert(kniBtn)
 
     local arcBtn =
         widget.newButton(
         {
             id = "Archer",
-            x = 1740,
+            x = 1750,
             y = 920,
-            width = 340,
-            height = 300,
-            defaultFile = "chars/buttons/default.png",
-            overFile = "chars/buttons/after.png",
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
             labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
             fontSize = 45,
             label = "Archer: 100g",
             onRelease = handleButtonEvent
         }
     )
-
-    sceneGroup:insert(wizBtn)
-    sceneGroup:insert(kniBtn)
     sceneGroup:insert(arcBtn)
 end
 
@@ -267,63 +272,28 @@ local function createMenuBtns()
     pg_text:toFront()
 end
 
-local function setUpLogArray()
-    --Creates a 2D array used for logic within the game
-    logArr = {}
-    for L = 1, 12 do
-        logArr[L] = {}
-        for H = 1, 9 do
-            logArr[L][H] = 0
-        end
-    end
+local function getLevelData(level)
+    local path = system.pathForFile("./assets/level-data.json")
+    local file = io.open( path, "r" );
+    local data = file:read( "*a" ); --everything
+    io.close( file );
+    file = nil;
 
-    for i = 7, 9 do
-        logArr[12][i] = 2
-    end
+    local dataRead = json.decode(data)
 
-    --Sets the path in the logical array
-    logArr[1][4] = -1
-    for i = 4, 1, -1 do
-        logArr[2][i] = -1
-    end
-    for i = 2, 4 do
-        logArr[i][1] = -1
-    end
-    for i = 1, 3 do
-        logArr[4][i] = -1
-    end
-    for i = 3, 8 do
-        logArr[5][i] = -1
-    end
-    logArr[6][8] = -1
-    for i = 6, 8 do
-        logArr[i][9] = -1
-    end
-    for i = 9, 2, -1 do
-        logArr[8][i] = -1
-    end
-    for i = 8, 12 do
-        logArr[i][2] = -1
-    end
-    for i = 2, 5 do
-        logArr[12][i] = -1
-    end
-    for i = 12, 10, -1 do
-        logArr[i][5] = -1
-    end
-    for i = 5, 8 do
-        logArr[10][i] = -1
-    end
-    logArr[11][8] = -1
+    game = dataRead[level]
+    game.towerType = ""
+
+    print(json.encode(game))
 end
 
 function scene:create(event)
     sceneGroup = self.view
 
+    getLevelData(event.params.level)
     createBg()
     createTowerBtns()
     createMenuBtns()
-    setUpLogArray()
 
     --Creates the gold count
     gold = 500
