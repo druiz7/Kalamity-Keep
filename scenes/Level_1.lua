@@ -2,6 +2,7 @@
 -- Prof. Kim
 
 local widget = require("widget")
+local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
@@ -20,15 +21,17 @@ local troll = require("enemies.troll")
 local scene = composer.newScene()
 local sceneGroup
 
+local game
+
 local zone
-local logArr
 
 local gold
 local goldTxt
 
-local unitType = ""
 local function zoneHandler(event)
     local zone = event.target
+    local logArr = game.logArr
+
     local clickPosX = 0
     local clickPosY = 0
     clickPosX, clickPosY = zone:contentToLocal(event.x, event.y)
@@ -48,23 +51,23 @@ local function zoneHandler(event)
     if(logArr[clickPosX][clickPosY] ~= 0) then return end
 
     -- clicked space is available
-    if (unitType == "Wizard") then
+    if (game.towerType == "Wizard") then
         local wizard = Wizard:new({posX = _x, posY = _y})
         wizard:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
-    elseif (unitType == "Knight") then
+    elseif (game.towerType == "Knight") then
         local knight = Knight:new({posX = _x, posY = _y})
         knight:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
-    elseif (unitType == "Archer") then
+    elseif (game.towerType == "Archer") then
         local archer = Archer:new({posX = _x, posY = _y})
         archer:spawn()
         logArr[clickPosX][clickPosY] = 1
-        unitType = ""
+        game.towerType = ""
         zone:removeEventListener("tap", zoneHandler)
     end
 
@@ -142,10 +145,7 @@ local function createBg()
     castle:toFront()
 
     --Creates the path
-    local verticies = {-715,300, -195,300, -195,100, -455,100, -455,-200, -325,-200, -325,-300, -195,-300, 
-        -195,-400, 455,-400, 455,-100, 325,-100, 325,300, 455,300, 455,0, 715,0,
-        715,100, 585,100, 585,400, 195,400, 195,-200, 325,-200, 325,-300, -65,-300, 
-        -65,-200, -195,-200, -195,-100, -325,-100, -325,0, -65,0, -65,400, -715,400}
+    local verticies = game.verticies
     local path = display.newPolygon(725, 570, verticies);
     path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
@@ -167,14 +167,14 @@ local function createTowerBtns()
     }
 
     local function handleButtonEvent(event)
-        if unitType ~= "" then return end
+        if game.towerType ~= "" then return end
 
         local tower = event.target.id
         local towerCost = towerAtr[tower].cost
         if (gold >= towerCost) then
             gold = gold - towerCost
             goldTxt.text = "Gold: " .. gold
-            unitType = tower
+            game.towerType = tower
 
             zone:addEventListener("tap", zoneHandler)
             zone.grid.isVisible = true
@@ -270,64 +270,31 @@ local function createMenuBtns()
     pg_text:toFront()
 end
 
-local function setUpLogArray()
-    --Creates a 2D array used for logic within the game
-    logArr = {}
-    for L = 1, 12 do
-        logArr[L] = {}
-        for H = 1, 9 do
-            logArr[L][H] = 0
-        end
-    end
+local function getLevelData(level)
+    game = {}
 
-    for i = 4, 6 do
-        logArr[12][i] = 2
-    end
+    local path = system.pathForFile("./assets/level-data.json")
+    local file = io.open( path, "r" );
+    local data = file:read( "*a" ); --everything
+    io.close( file );
+    file = nil;
 
-    --Sets the path in the logical array
-    for i = 1, 5 do
-        logArr[i][8] = -1
-    end
-    for i = 8, 5, -1 do
-        logArr[5][i] = -1
-    end
-    for i = 5, 3, -1 do
-        logArr[i][5] = -1
-    end
-    for i = 5, 3, -1 do
-        logArr[3][i] = -1
-    end
-    logArr[4][3] = -1
-    logArr[4][2] = -1
-    logArr[5][2] = -1
-    for i = 5, 9 do
-        logArr[i][1] = -1
-    end
-    for i = 1, 3 do
-        logArr[9][i] = -1
-    end
-    for i = 3, 8 do
-        logArr[8][i] = -1
-    end
-    for i = 8, 10 do
-        logArr[i][8] = -1
-    end
-    for i = 8, 5, -1 do
-        logArr[10][i] = -1
-    end
-    logArr[11][5] = -1
+    local dataRead = json.decode(data)
+    game.verticies = dataRead[level].verticies
+    game.logArr = dataRead[level].logArr
 
-    local json = require("json")
-    print(json.encode(logArr))
+    game.towerType = ""
+
+    print(json.encode(game))
 end
 
 function scene:create(event)
     sceneGroup = self.view
 
+    getLevelData(event.params.level)
     createBg()
     createTowerBtns()
     createMenuBtns()
-    setUpLogArray()
 
     --Creates the gold count
     gold = 500
