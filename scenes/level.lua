@@ -1,7 +1,6 @@
 -- David Ruiz, Nick Dea, Shuji Mizoguchi
 -- Prof. Kim
 
-local widget = require("widget")
 local json = require("json")
 local physics = require("physics")
 physics.start()
@@ -92,8 +91,6 @@ local function createBg()
     zone.fill = {type = "image", filename = "assets/tiles/grass.png"}
     zone.fill.scaleX = 256 / zone.width
     zone.fill.scaleY = 256 / zone.height
-    physics.addBody(zone, "static")
-    zone.isSensor = true
     sceneGroup:insert(zone)
 
     zone.grid = display.newGroup()
@@ -158,7 +155,7 @@ local function createBg()
 end
 
 local function createTowerBtns()
-    local function handleButtonEvent(event)
+    sceneGroup:insert(components.createTowerButtons(game.towerAtr, function (event)
         local tower = event.target.id
 
         -- if the user reclicked on the same button, cancel the placement operation
@@ -180,62 +177,7 @@ local function createTowerBtns()
             zone:addEventListener("tap", zoneHandler)
             zone.grid.isVisible = true
         end
-    end
-
-    local wizBtn =
-        widget.newButton(
-        {
-            id = "Wizard",
-            x = 1750,
-            y = 320,
-            width = 320,
-            height = 290,
-            defaultFile = "assets/buttons/default.png",
-            overFile = "assets/buttons/after.png",
-            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
-            fontSize = 45,
-            label = "Wizard: 150g",
-            onRelease = handleButtonEvent
-        }
-    )
-
-    local kniBtn =
-        widget.newButton(
-        {
-            id = "Knight",
-            x = 1750,
-            y = 620,
-            width = 320,
-            height = 290,
-            defaultFile = "assets/buttons/default.png",
-            overFile = "assets/buttons/after.png",
-            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
-            fontSize = 45,
-            label = "Knight: 50g",
-            onRelease = handleButtonEvent
-        }
-    )
-
-    local arcBtn =
-        widget.newButton(
-        {
-            id = "Archer",
-            x = 1750,
-            y = 920,
-            width = 320,
-            height = 290,
-            defaultFile = "assets/buttons/default.png",
-            overFile = "assets/buttons/after.png",
-            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
-            fontSize = 45,
-            label = "Archer: 100g",
-            onRelease = handleButtonEvent
-        }
-    )
-
-    sceneGroup:insert(wizBtn)
-    sceneGroup:insert(kniBtn)
-    sceneGroup:insert(arcBtn)
+    end))
 end
 
 local function createMenuBtns()

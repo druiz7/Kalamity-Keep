@@ -1,3 +1,5 @@
+local widget = require("widget")
+
 local _M = {}
 
 function _M.createGold(game)
@@ -36,6 +38,67 @@ function _M.createPauseBtn()
 end
 
 function _M.createHomeBtn()
+end
+
+function _M.createTowerButtons(towerAtr, handler)
+    local group = display.newGroup()
+
+    local wizBtn =
+        widget.newButton(
+        {
+            id = "Wizard",
+            x = 1750,
+            y = 320,
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
+            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
+            fontSize = 45,
+            label = "Wizard: " .. towerAtr.Wizard.cost .. "g",
+            onRelease = handler
+        }
+    )
+
+    local kniBtn =
+        widget.newButton(
+        {
+            id = "Knight",
+            x = 1750,
+            y = 620,
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
+            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
+            fontSize = 45,
+            label = "Knight: " .. towerAtr.Knight.cost .. "g",
+            onRelease = handler
+        }
+    )
+
+    local arcBtn =
+        widget.newButton(
+        {
+            id = "Archer",
+            x = 1750,
+            y = 920,
+            width = 320,
+            height = 290,
+            defaultFile = "assets/buttons/default.png",
+            overFile = "assets/buttons/after.png",
+            labelColor = {default = {0, 0, 0}, over = {1, 1, 1}},
+            fontSize = 45,
+            label = "Archer: " .. towerAtr.Archer.cost .. "g",
+            onRelease = handler
+        }
+    )
+
+    group:insert(wizBtn)
+    group:insert(kniBtn)
+    group:insert(arcBtn)
+
+    return group
 end
 
 return _M
