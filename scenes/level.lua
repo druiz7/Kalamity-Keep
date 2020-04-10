@@ -6,27 +6,24 @@ local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
-
 --physics.setDrawMode("hybrid")
+
+local composer = require("composer")
+local scene = composer.newScene()
+local sceneGroup
+
+local components = require("scenes.components")
 
 local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
-local composer = require("composer")
 local barbarian = require("enemies.barbarian")
 local lizard = require("enemies.lizard")
 local troll = require("enemies.troll")
 
-local scene = composer.newScene()
-local sceneGroup
-
 local game
-
 local zone
-
-local gold
-local goldTxt
 
 local function zoneHandler(event)
     local zone = event.target
@@ -54,23 +51,23 @@ local function zoneHandler(event)
     if (game.towerType == "Wizard") then
         local wizard = Wizard:new({posX = _x, posY = _y})
         wizard:spawn()
-        logArr[clickPosX][clickPosY] = 1
-        game.towerType = ""
-        zone:removeEventListener("tap", zoneHandler)
+
     elseif (game.towerType == "Knight") then
         local knight = Knight:new({posX = _x, posY = _y})
         knight:spawn()
-        logArr[clickPosX][clickPosY] = 1
-        game.towerType = ""
-        zone:removeEventListener("tap", zoneHandler)
+
     elseif (game.towerType == "Archer") then
         local archer = Archer:new({posX = _x, posY = _y})
         archer:spawn()
-        logArr[clickPosX][clickPosY] = 1
-        game.towerType = ""
-        zone:removeEventListener("tap", zoneHandler)
+
     end
 
+    local towerCost = game.towerAtr[game.towerType].cost
+    game:updateGold(-towerCost)
+
+    logArr[clickPosX][clickPosY] = 1
+    game.towerType = ""
+    zone:removeEventListener("tap", zoneHandler)
     zone.grid.isVisible = false
 end
 
@@ -133,9 +130,8 @@ local function createBg()
     zone.grid.isVisible = false
 
     --Creates the castle
-    local castle = display.newRect(game.castle.x, game.castle.y,
-        game.castle.width, game.castle.height)
-        
+    local castle = game.castle
+    castle = display.newRect(castle.x, castle.y, castle.width, castle.height)
     castle.anchorX = 0
     castle.anchorY = 0
     castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
@@ -147,8 +143,8 @@ local function createBg()
     castle:toFront()
 
     --Creates the path
-    local verticies = game.path.verticies
-    local path = display.newPolygon(game.path.x, game.path.y, verticies);
+    local path = game.path
+    path = display.newPolygon(path.x, path.y, path.verticies);
     path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
     path.fill.scaleY = 256/ path.height
@@ -162,20 +158,23 @@ local function createBg()
 end
 
 local function createTowerBtns()
-    local towerAtr = {
-        Wizard = {cost = 150},
-        Knight = {cost = 50},
-        Archer = {cost = 100}
-    }
-
     local function handleButtonEvent(event)
+        local tower = event.target.id
+
+        -- if the user reclicked on the same button, cancel the placement operation
+        if game.towerType == tower then
+            game.towerType = ""
+            zone:removeEventListener("tap", zoneHandler)
+            zone.grid.isVisible = false
+            return
+        end
+
+        -- if the user clicked on another tower button, ignore it
         if game.towerType ~= "" then return end
 
-        local tower = event.target.id
-        local towerCost = towerAtr[tower].cost
-        if (gold >= towerCost) then
-            gold = gold - towerCost
-            goldTxt.text = "Gold: " .. gold
+        -- if the user clicked on a tower button to place, perform the placement operation setup
+        local towerCost = game.towerAtr[tower].cost
+        if (game.gold >= towerCost) then
             game.towerType = tower
 
             zone:addEventListener("tap", zoneHandler)
@@ -199,7 +198,6 @@ local function createTowerBtns()
             onRelease = handleButtonEvent
         }
     )
-    sceneGroup:insert(wizBtn)
 
     local kniBtn =
         widget.newButton(
@@ -217,7 +215,6 @@ local function createTowerBtns()
             onRelease = handleButtonEvent
         }
     )
-    sceneGroup:insert(kniBtn)
 
     local arcBtn =
         widget.newButton(
@@ -235,10 +232,16 @@ local function createTowerBtns()
             onRelease = handleButtonEvent
         }
     )
+
+    sceneGroup:insert(wizBtn)
+    sceneGroup:insert(kniBtn)
     sceneGroup:insert(arcBtn)
 end
 
 local function createMenuBtns()
+    sceneGroup:insert(components.createGold(game))
+    sceneGroup:insert(components.createHealth(game))
+
     -- button uses an event to clear the game
     local clearGame = display.newRect(1920 - 100, 100, 150, 100)
     clearGame:addEventListener("tap", function()
@@ -272,7 +275,7 @@ local function createMenuBtns()
     pg_text:toFront()
 end
 
-local function getLevelData(level)
+local function setUpGameObj(level)
     local path = system.pathForFile("./assets/level-data.json")
     local file = io.open( path, "r" );
     local data = file:read( "*a" ); --everything
@@ -283,25 +286,22 @@ local function getLevelData(level)
 
     game = dataRead[level]
     game.towerType = ""
-
-    print(json.encode(game))
+    game.gold = 500
+    game.health = 100
+    game.towerAtr = {
+        Wizard = {cost = 150},
+        Knight = {cost = 50},
+        Archer = {cost = 100}
+    }
 end
 
 function scene:create(event)
     sceneGroup = self.view
 
-    getLevelData(event.params.level)
+    setUpGameObj(event.params.level)
     createBg()
     createTowerBtns()
     createMenuBtns()
-
-    --Creates the gold count
-    gold = 500
-    goldTxt = display.newText("Gold: " .. gold, 60, 60)
-    sceneGroup:insert(goldTxt)
-    goldTxt.anchorX = 0
-    goldTxt.anchorY = 0
-    goldTxt:setFillColor(0, 0, 0)
 end
 
 scene:addEventListener("create", scene)
