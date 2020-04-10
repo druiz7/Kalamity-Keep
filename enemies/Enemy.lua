@@ -44,7 +44,7 @@ function Enemy:hit(damageNum)
 	if (self.HP <= 0) then
 		self.enemy:removeSelf();
 		self.enemy=nil;
-		self = nil;  
+		self = nil;
 	end
 end
 
