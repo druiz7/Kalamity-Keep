@@ -45,21 +45,24 @@ local function zoneHandler(event)
     --Converts the clickPos coordinates back into x,y coordinates
     local _x, _y = zone:localToContent(-715 + 130*(clickPosX-1), -400 + 100*(clickPosY-1))
 
-    if(unitType == "Wizard" and logArr[clickPosX][clickPosY] == 0)then
+    if(logArr[clickPosX][clickPosY] ~= 0) then return end
+
+    -- clicked space is available
+    if(unitType == "Wizard")then
         local wizard = Wizard:new({posX = _x, posY = _y})
         wizard:spawn()
         logArr[clickPosX][clickPosY] = 1;
         unitType = "";
         zone:removeEventListener("tap", zoneHandler);
-    end
-    if(unitType == "Knight" and logArr[clickPosX][clickPosY] == 0)then
+    
+    elseif(unitType == "Knight")then
         local knight = Knight:new({posX = _x, posY = _y})
         knight:spawn()
         logArr[clickPosX][clickPosY] = 1;
         unitType = "";
         zone:removeEventListener("tap", zoneHandler);
-    end
-    if(unitType == "Archer" and logArr[clickPosX][clickPosY] == 0)then
+    
+    elseif(unitType == "Archer")then
         local archer = Archer:new({posX = _x, posY = _y})
         archer:spawn()
         logArr[clickPosX][clickPosY] = 1;
@@ -174,10 +177,10 @@ local function createTowerBtns()
     local wizBtn = widget.newButton(
         {
             id = "Wizard",
-            x = 1740,
+            x = 1750,
             y = 320,
-            width = 340,
-            height = 300,
+            width = 320,
+            height = 290,
             defaultFile = "chars/buttons/default.png",
             overFile = "chars/buttons/after.png",
             labelColor = {default={0,0,0}, over={1,1,1}},
@@ -191,10 +194,10 @@ local function createTowerBtns()
     local kniBtn = widget.newButton(
         {
             id = "Knight",
-            x = 1740,
+            x = 1750,
             y = 620,
-            width = 340,
-            height = 300,
+            width = 320,
+            height = 290,
             defaultFile = "chars/buttons/default.png",
             overFile = "chars/buttons/after.png",
             labelColor = {default={0,0,0}, over={1,1,1}},
@@ -208,10 +211,10 @@ local function createTowerBtns()
     local arcBtn = widget.newButton(
         {
             id = "Archer",
-            x = 1740,
+            x = 1750,
             y = 920,
-            width = 340,
-            height = 300,
+            width = 320,
+            height = 290,
             defaultFile = "chars/buttons/default.png",
             overFile = "chars/buttons/after.png",
             labelColor = {default={0,0,0}, over={1,1,1}},
