@@ -67,6 +67,8 @@ local function zoneHandler(event)
         unitType = ""
         zone:removeEventListener("tap", zoneHandler)
     end
+
+    zone.grid.isVisible = false
 end
 
 local function createBg()
@@ -94,7 +96,7 @@ local function createBg()
     zone.isSensor = true
     sceneGroup:insert(zone)
 
-    local Grid = display.newGroup()
+    zone.grid = display.newGroup()
     local vert = 10
     local vGridlines = display.newGroup()
     local horiz = 170
@@ -122,9 +124,10 @@ local function createBg()
         hGridlines:insert(horizGrid)
     end
 
-    Grid:insert(vGridlines)
-    Grid:insert(hGridlines)
-    sceneGroup:insert(Grid)
+    zone.grid:insert(vGridlines)
+    zone.grid:insert(hGridlines)
+    sceneGroup:insert(zone.grid)
+    zone.grid.isVisible = false;
 
     --Creates the castle
     local castle = display.newRect(1440, 470, 130, 300)
@@ -174,6 +177,7 @@ local function createTowerBtns()
             unitType = tower
 
             zone:addEventListener("tap", zoneHandler)
+            zone.grid.isVisible = true
         end
     end
 
