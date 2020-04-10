@@ -44,7 +44,7 @@ function Enemy:hit(damageNum)
 	if (self.HP <= 0) then
 		self.enemy:removeSelf();
 		self.enemy=nil;
-		self = nil;  
+		self = nil;
 	end
 end
 
@@ -91,14 +91,14 @@ end
 
 -- function to stop the movement of the enemies when the pause button is pressed
 function Enemy:pause()
-	self:setSequence("idle")
+	self.enemy:pause()
 
 	transition.pause()
 end
 
 -- fuction to resume the movement o the enemies when the resume button is pressed.
 function Enemy:resume()
-	self:setSequence("run")
+	self.enemy:play()
 
 	transition.resume()
 end
