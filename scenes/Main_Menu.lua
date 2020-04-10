@@ -25,10 +25,10 @@ function scene:create( event )
     exitButton.strokeWidth = 4;
 
     lev1:addEventListener("tap", function()
-        composer.gotoScene("scenes.Level_1", {effect = "fade", time = 250, params = {level="level1"}});
+        composer.gotoScene("scenes.level", {effect = "fade", time = 250, params = {level="level1"}});
     end);
     lev2:addEventListener("tap", function()
-        composer.gotoScene("scenes.Level_2", {effect = "fade", time = 250, params = {level="level2"}});
+        composer.gotoScene("scenes.level", {effect = "fade", time = 250, params = {level="level2"}});
     end);
     exitButton:addEventListener("tap", function()
         native.requestExit();

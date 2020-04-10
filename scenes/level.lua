@@ -133,7 +133,9 @@ local function createBg()
     zone.grid.isVisible = false
 
     --Creates the castle
-    local castle = display.newRect(1440, 470, 130, 300)
+    local castle = display.newRect(game.castle.x, game.castle.y,
+        game.castle.width, game.castle.height)
+        
     castle.anchorX = 0
     castle.anchorY = 0
     castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
@@ -145,8 +147,8 @@ local function createBg()
     castle:toFront()
 
     --Creates the path
-    local verticies = game.verticies
-    local path = display.newPolygon(725, 570, verticies);
+    local verticies = game.path.verticies
+    local path = display.newPolygon(game.path.x, game.path.y, verticies);
     path.fill = {type="image", filename="assets/tiles/dirt.png"}
     path.fill.scaleX = 256/ path.width
     path.fill.scaleY = 256/ path.height
@@ -271,8 +273,6 @@ local function createMenuBtns()
 end
 
 local function getLevelData(level)
-    game = {}
-
     local path = system.pathForFile("./assets/level-data.json")
     local file = io.open( path, "r" );
     local data = file:read( "*a" ); --everything
@@ -280,9 +280,8 @@ local function getLevelData(level)
     file = nil;
 
     local dataRead = json.decode(data)
-    game.verticies = dataRead[level].verticies
-    game.logArr = dataRead[level].logArr
 
+    game = dataRead[level]
     game.towerType = ""
 
     print(json.encode(game))
