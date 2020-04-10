@@ -136,6 +136,12 @@ local function createBg()
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
     castle.strokeWidth = 4
+    physics.addBody(castle, "static", {isSensor = true})
+    castle:addEventListener("collision", function(event)
+        --SHUJI IMPLEMENT THIS
+        game:updateHealth(-100) -- whatever health that is
+    end)
+
     sceneGroup:insert(castle)
     castle:toFront()
 
