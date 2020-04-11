@@ -1,4 +1,5 @@
 local widget = require("widget")
+local composer = require("composer")
 
 local _M = {}
 
@@ -35,6 +36,17 @@ function _M.createHealth(game)
 end
 
 function _M.createPauseBtn()
+    local group = display.newGroup()
+    local image = display.newImage(group, "./assets/buttons/pause.png", 1920 - 100, 100)
+
+    local options = { isModal = true, effect = "crossFade"};
+    image:addEventListener("tap", function (event)
+        Runtime:dispatchEvent({name = "pauseGame"})
+        physics.pause()
+        composer.showOverlay("scenes.pause", options );
+    end)
+
+    return group;
 end
 
 function _M.createHomeBtn()

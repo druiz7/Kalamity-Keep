@@ -11,7 +11,7 @@ function LongRange:new(o)
 end
 
 function LongRange:attack(enemy)
-    Proj:new({posX = self.posX, posY = self.posY, color = self.projColor, enemy = enemy, damage = self.damage})
+    Proj:new({displayGroup = self.displayGroup, posX = self.posX, posY = self.posY, color = self.projColor, enemy = enemy, damage = self.damage})
         :spawn()
 end
 

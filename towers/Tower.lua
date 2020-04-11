@@ -8,7 +8,8 @@ local Tower = {
     posX = display.contentCenterX,
     posY = display.contentCenterY,
     scaleFactor = 6,
-    range = 1
+    range = 1,
+    displayGroup = display.newGroup()
 }
 
 function Tower:new(o)
@@ -26,7 +27,6 @@ function Tower:spawn()
     self.shape.tag = self.tag
 
     self:createRange()
-    self.shape:toFront()
 
     Runtime:addEventListener("enterFrame", self)
     Runtime:addEventListener("clearGame", self)
@@ -38,7 +38,7 @@ function Tower:spawnSprite()
     local opt, seqData = chars.getFrames(self.sheetName)
     local sheet = graphics.newImageSheet("./assets/all.png", opt)
 
-    self.sprite = display.newSprite(sheet, seqData)
+    self.sprite = display.newSprite(self.displayGroup, sheet, seqData)
     self.sprite.x = self.posX
     self.sprite.y = self.posY
 
@@ -96,39 +96,36 @@ function Tower:createRange()
     self.rangeSensor.isVisible = false
 
     self.enemies = {}
-    self.rangeSensor:addEventListener(
-        "collision",
-        function(event)
-            if (event.other.tag ~= "enemy") then
-                return
+    self.rangeSensor:addEventListener("collision", function(event)
+        if (event.other.tag ~= "enemy") then
+            return
+        end
+
+        local enemyTriggered = event.other
+        if (event.phase == "began") then
+            print("adding enemy to list")
+            -- add enemy to enemies list
+            local inTable = false
+            for _, enemy in pairs(self.enemies) do
+                if enemy == enemyTriggered then
+                    inTable = true
+                    break
+                end
             end
 
-            local enemyTriggered = event.other
-            if (event.phase == "began") then
-                print("adding enemy to list")
-                -- add enemy to enemies list
-                local inTable = false
-                for _, enemy in pairs(self.enemies) do
-                    if enemy == enemyTriggered then
-                        inTable = true
-                        break
-                    end
-                end
-
-                if (not inTable) then
-                    table.insert(self.enemies, enemyTriggered)
-                end
-            elseif (event.phase == "ended") then
-                print("removing enemy from list")
-                -- remove enemy from enemies list
-                for i, enemy in pairs(self.enemies) do
-                    if (enemy == enemyTriggered) then
-                        self.enemies[i] = nil
-                    end
+            if (not inTable) then
+                table.insert(self.enemies, enemyTriggered)
+            end
+        elseif (event.phase == "ended") then
+            print("removing enemy from list")
+            -- remove enemy from enemies list
+            for i, enemy in pairs(self.enemies) do
+                if (enemy == enemyTriggered) then
+                    self.enemies[i] = nil
                 end
             end
         end
-    )
+    end)
 end
 
 function Tower:getEnemy()

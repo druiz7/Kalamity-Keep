@@ -13,10 +13,12 @@ local sceneGroup
 
 local components = require("scenes.components")
 
+local Tower = require("towers.Tower")
 local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
+local Enemy = require("enemies.Enemy")
 local barbarian = require("enemies.barbarian")
 local lizard = require("enemies.lizard")
 local troll = require("enemies.troll")
@@ -138,8 +140,10 @@ local function createBg()
     castle.strokeWidth = 4
     physics.addBody(castle, "static", {isSensor = true})
     castle:addEventListener("collision", function(event)
-        --SHUJI IMPLEMENT THIS
-        game:updateHealth(-100) -- whatever health that is
+        if(event.phase == "began" and event.other.tag == "enemy") then
+            --SHUJI IMPLEMENT THIS
+            game:updateHealth(-100) -- whatever health that is
+        end
     end)
 
     sceneGroup:insert(castle)
@@ -187,40 +191,16 @@ local function createTowerBtns()
 end
 
 local function createMenuBtns()
-    sceneGroup:insert(components.createGold(game))
-    sceneGroup:insert(components.createHealth(game))
+    game.gui_gold = components.createGold(game)
+    game.gui_health = components.createHealth(game)
+    game.gui_pause = components.createPauseBtn()
+    sceneGroup:insert(game.gui_gold)
+    sceneGroup:insert(game.gui_health)
+    sceneGroup:insert(game.gui_pause)
 
-    -- button uses an event to clear the game
-    local clearGame = display.newRect(1920 - 100, 100, 150, 100)
-    clearGame:addEventListener("tap", function()
-            Runtime:dispatchEvent({name = "clearGame"})
-        end
-    )
-    sceneGroup:insert(clearGame)
-    local cg_text = display.newText("Clear", 1920 - 100, 100)
-    cg_text:setFillColor(1, 0, 0)
-    sceneGroup:insert(cg_text)
-
-    -- button pauses the game
-    local pg_text = display.newText("Pause", 1920 - 300, 100)
-    pg_text:setFillColor(1, 0, 0)
-    sceneGroup:insert(pg_text)
-    local pauseGame = display.newRect(1920 - 300, 100, 150, 100)
-    pauseGame:addEventListener("tap", function()
-            if (pg_text.text == "Pause") then
-                print("clicks")
-                Runtime:dispatchEvent({name = "pauseGame"})
-                physics.pause()
-                pg_text.text = "Resume"
-            else
-                Runtime:dispatchEvent({name = "resumeGame"})
-                physics.start()
-                pg_text.text = "Pause"
-            end
-        end
-    )
-    sceneGroup:insert(pauseGame)
-    pg_text:toFront()
+    Runtime:addEventListener("killedEnemy", function (event)
+        game:updateGold(event.target.reward);
+    end)
 end
 
 local function setUpGameObj(level)
@@ -243,6 +223,11 @@ local function setUpGameObj(level)
     }
 end
 
+function scene:resumeGame()
+    Runtime:dispatchEvent({name = "resumeGame"})
+    physics.start()
+end
+
 function scene:create(event)
     sceneGroup = self.view
 
@@ -250,8 +235,18 @@ function scene:create(event)
     createBg()
     createTowerBtns()
     createMenuBtns()
+
+    Tower.displayGroup = display.newGroup()
+    Enemy.displayGroup = display.newGroup()
+    sceneGroup:insert(Tower.displayGroup)
+    sceneGroup:insert(Enemy.displayGroup)
+end
+
+function scene:destroy(event)
+    Runtime:dispatchEvent({name = "clearGame"})
 end
 
 scene:addEventListener("create", scene)
+scene:addEventListener("destroy", scene)
 
 return scene

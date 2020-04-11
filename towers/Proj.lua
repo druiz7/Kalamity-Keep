@@ -8,7 +8,7 @@ function Proj:new(o)
 end
 
 function Proj:spawn()
-    self.shape = display.newRect(self.posX, self.posY, 50, 50)
+    self.shape = display.newRect(self.displayGroup, self.posX, self.posY, 50, 50)
     self.shape:setFillColor(unpack(self.color))
     physics.addBody(self.shape, "dynamic", {isSensor = true})
     self:chase()
