@@ -35,11 +35,11 @@ function _M.createHealth(game)
     return group
 end
 
-function _M.createPauseBtn()
+function _M.createPauseBtn(game)
     local group = display.newGroup()
     local image = display.newImage(group, "./assets/buttons/pause.png", 1920 - 100, 100)
 
-    local options = { isModal = true, effect = "crossFade"};
+    local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level}};
     image:addEventListener("tap", function (event)
         Runtime:dispatchEvent({name = "pauseGame"})
         physics.pause()
@@ -47,9 +47,6 @@ function _M.createPauseBtn()
     end)
 
     return group;
-end
-
-function _M.createHomeBtn()
 end
 
 function _M.createTowerButtons(towerAtr, handler)

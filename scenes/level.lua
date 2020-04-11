@@ -193,7 +193,7 @@ end
 local function createMenuBtns()
     game.gui_gold = components.createGold(game)
     game.gui_health = components.createHealth(game)
-    game.gui_pause = components.createPauseBtn()
+    game.gui_pause = components.createPauseBtn(game)
     sceneGroup:insert(game.gui_gold)
     sceneGroup:insert(game.gui_health)
     sceneGroup:insert(game.gui_pause)
@@ -213,6 +213,7 @@ local function setUpGameObj(level)
     local dataRead = json.decode(data)
 
     game = dataRead[level]
+    game.level = level
     game.towerType = ""
     game.gold = 500
     game.health = 100

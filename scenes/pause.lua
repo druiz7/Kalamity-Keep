@@ -24,6 +24,9 @@ function scene:create(event)
 
     local restartBtn = display.newImage(sceneGroup, "./assets/buttons/restart.png", display.contentCenterX, display.contentCenterY)
     restartBtn:scale(btnScale,btnScale)
+    restartBtn:addEventListener("tap", function ()
+        composer.gotoScene("scenes.proxy", {effect = "fade", time = 0, params = {level = event.params.level}})
+    end)
 
     local homeBtn = display.newImage(sceneGroup, "./assets/buttons/home.png", display.contentCenterX + 300, display.contentCenterY)
     homeBtn:scale(btnScale,btnScale)
