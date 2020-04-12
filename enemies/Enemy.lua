@@ -1,6 +1,8 @@
-local Enemy = {tag = enemy, name='Enemy', HP=1, damage=1, speed=1, path={}, reward=50, xSpawn=0, ySpawn=0};
+local Enemy = {tag = 'enemy', name='Enemy', HP=1, damage=1, speed=1, reward=50, xSpawn=0, ySpawn=0};
 
 local chars = require("assets.Chars")
+
+local components = require("scenes.components")
 
 function Enemy:new(o)    --constructor
 	o = o or {}; 
@@ -16,8 +18,12 @@ function Enemy:spawn()
 	self.enemy = self.sprite
 	self.enemy.pp= self;      -- parent pointer to parent object
 	self.enemy.tag= self.tag; --“enemy”
-	self.enemy.curX = self.xSpawn
-	self.enemy.curY = self.ySpawn
+
+	self.enemy.curX = 1
+	self.enemy.curY = 8
+	
+	self.enemy.lastX = 1
+	self.enemy.lastY = 1
 
 	physics.addBody(self.enemy, "kinematic"); 
 
@@ -52,46 +58,74 @@ function Enemy:hit(damageNum)
 end
 
 --> take the path made in game logic and use it to move the enemy
-function Enemy:move(path)
-	while (self.HP > 0) do
-		--> check up
-		if(path[curX][curY-1] ~= path[lastX][lastY]) then
-			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y-100})
+function Enemy:move(enemyPath)
+	print("Previous position: ")
+	print("x: " .. self.enemy.lastX .. " y: " .. self.enemy.lastY)
+	print("current position: ")
+	print("x: " .. self.enemy.curX .. " y: " .. self.enemy.curY)
+
+	--> check right
+	print("check right")
+	if(enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
+		print("right")
+		transition.to(self.enemy, {time = 100, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
+			self.enemy.lastX = self.enemy.curX
+			self.enemy.lastY = self.enemy.curY
+			self.enemy.curX = self.enemy.curX + 1
+			self:move(enemyPath)
+		end
+		})
+
+	--> check down
+	print("check down")
+	elseif(enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
+		print("down")
+		transition.to(self.enemy, {time = 10, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
+			self.enemy.lastX = self.enemy.curX
+			self.enemy.lastY = self.enemy.curY
+			self.enemy.curY = self.enemy.curY + 1
+			self:move(enemyPath)
+		end
+		})
+
+	--> check up
+	print("check up")
+	elseif(enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
+		print("up")
+		transition.to(self.enemy, {time = 10, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
+			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curY = self.enemy.curY-1
+			self:move(enemyPath)
 		end
+		})
 
-		--> check left
-		if(path[curX-1][curY] ~= path[lastX][lastY]) then
-			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x-130, y=self.enemy.y})
+	--> check left
+	print("check left")
+	elseif(enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
+		print("left")
+		transition.to(self.enemy, {time = 10, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
+			self.enemy.lastY = self.enemy.curY
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.curX = self.enemy.curX - 1
+			self:move(enemyPath)
 		end
+		})
 
-		--> check down
-		if(path[curX][curY+1] ~= path[lastX][lastY]) then
-			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x, y=self.enemy.y+100})
-			self.enemy.lastY = self.enemy.curY
-			self.enemy.curY = self.enemy.curY+1
-		end
-
-		--> check right
-		if(path[curX+1][curY] ~= path[lastX][lastY]) then
-			transition.to(self.enemy, {time = 500*self.speed, x=self.enemy.x+130, y=self.enemy.y})
-			self.enemy.lastX = self.enemy.curX
-			self.enemy.curX = self.enemy.curX + 1
-		end
+	--> if there's nowhere else to go	
+		else
+		print("end")
+		transition.to(self.enemy, {time = 10, x=self.enemy.x+130, y=self.enemy.y})
+		-- self.HP = 0
+		-- self.enemy:removeSelf()
+		-- self.enemy = nil
 	end
 end
 
 -- custom event for the enemy dying
 function Enemy:death(event)
 	--something here to give the user money, take health from the user,  other actions for when the enemy either dies or reaches the end
-	if (event.target == player) then
-		player.hp = player.hp - 1
-	elseif (event.target ~= player) then
-		player.wallet = player.wallet + self.reward
-	end
+	game:updateHealth(self.reward)
 	self.enemy:removeSelf()
 	self.enemy = nil
 end
@@ -124,3 +158,4 @@ function Enemy:clear()
 end
 
 return Enemy
+
