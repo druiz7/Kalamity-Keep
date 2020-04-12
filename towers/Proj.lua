@@ -8,7 +8,7 @@ function Proj:new(o)
 end
 
 function Proj:spawn()
-    self.shape = display.newRect(self.posX, self.posY, 50, 50)
+    self.shape = display.newRect(self.displayGroup, self.posX, self.posY, 50, 50)
     self.shape:setFillColor(unpack(self.color))
     physics.addBody(self.shape, "dynamic", {isSensor = true})
     self:chase()
@@ -21,16 +21,15 @@ end
 
 function Proj:chase()
     self.shape.tid = timer.performWithDelay(100, function (e) 
-        if not (self.enemy and  pcall(function () self:chaseIt() end) )then
-            if (not self.shape) then
+        if not (self.enemy and pcall(function () self:chaseIt() end)) then
+            if (self.shape) then
                 pcall(function()
-                            timer.cancel(self.shape.tid)
-                            self.shape:removeSelf()
-                            self.shape = nil
-                        end
-                    )
-                end
+                    timer.cancel(self.shape.tid)
+                    self.shape:removeSelf()
+                    self.shape = nil
+                end)
             end
+        end
     end, -1)
 end
 

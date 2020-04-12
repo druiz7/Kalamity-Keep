@@ -45,6 +45,13 @@ function scene:create( event )
 
 end
 
+function scene:show(event)
+    if event.phase == "did" then
+        composer.removeScene("scenes.level")
+    end
+end
+
+scene:addEventListener("show", scene)
 scene:addEventListener("create", scene)
 
 return scene

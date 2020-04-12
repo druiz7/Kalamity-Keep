@@ -12,10 +12,12 @@ local sceneGroup
 
 local components = require("scenes.components")
 
+local Tower = require("towers.Tower")
 local Archer = require("towers.Archer")
 local Wizard = require("towers.Wizard")
 local Knight = require("towers.Knight")
 
+local Enemy = require("enemies.Enemy")
 local barbarian = require("enemies.barbarian")
 local lizard = require("enemies.lizard")
 local troll = require("enemies.troll")
@@ -136,22 +138,14 @@ local function createBg()
     castle:setStrokeColor(0, 0, 0)
     castle.strokeWidth = 4
     physics.addBody(castle, "dynamic", {isSensor = true})
-
     castle:addEventListener("collision", function(event)
-        --SHUJI IMPLEMENT THIS
-        print("+++++++++++++++++++++++++++++++++")
-        if(event.other.tag == 'enemy') then
-            print("hit")
-            print("what am I looking at????: ")
-            apple = event.other.tag
-            print(apple)
-            --> game:updateHealth(-event.other.enemy.damage)
-            game:updateHealth(-10) -- whatever health that is
+        if event.phase == "began" and event.other.tag == "enemy" then
+                event.other.sprite:removeSelf()
+                game:updateHealth(event.other.damage)
         end
     end)
 
     sceneGroup:insert(castle)
-    castle:toFront()
 
     --Creates the path
     local path = game.path
@@ -195,40 +189,16 @@ local function createTowerBtns()
 end
 
 local function createMenuBtns()
-    sceneGroup:insert(components.createGold(game))
-    sceneGroup:insert(components.createHealth(game))
+    game.gui_gold = components.createGold(game)
+    game.gui_health = components.createHealth(game)
+    game.gui_pause = components.createPauseBtn(game)
+    sceneGroup:insert(game.gui_gold)
+    sceneGroup:insert(game.gui_health)
+    sceneGroup:insert(game.gui_pause)
 
-    -- button uses an event to clear the game
-    local clearGame = display.newRect(1920 - 100, 100, 150, 100)
-    clearGame:addEventListener("tap", function()
-            Runtime:dispatchEvent({name = "clearGame"})
-        end
-    )
-    sceneGroup:insert(clearGame)
-    local cg_text = display.newText("Clear", 1920 - 100, 100)
-    cg_text:setFillColor(1, 0, 0)
-    sceneGroup:insert(cg_text)
-
-    -- button pauses the game
-    local pg_text = display.newText("Pause", 1920 - 300, 100)
-    pg_text:setFillColor(1, 0, 0)
-    sceneGroup:insert(pg_text)
-    local pauseGame = display.newRect(1920 - 300, 100, 150, 100)
-    pauseGame:addEventListener("tap", function()
-            if (pg_text.text == "Pause") then
-                print("clicks")
-                Runtime:dispatchEvent({name = "pauseGame"})
-                physics.pause()
-                pg_text.text = "Resume"
-            else
-                Runtime:dispatchEvent({name = "resumeGame"})
-                physics.start()
-                pg_text.text = "Pause"
-            end
-        end
-    )
-    sceneGroup:insert(pauseGame)
-    pg_text:toFront()
+    Runtime:addEventListener("killedEnemy", function (event)
+        game:updateGold(event.target.reward);
+    end)
 end
 
 local function setUpGameObj(level)
@@ -241,6 +211,7 @@ local function setUpGameObj(level)
     local dataRead = json.decode(data)
 
     game = dataRead[level]
+    game.level = level
     game.towerType = ""
     game.gold = 500
     game.health = 100
@@ -278,6 +249,39 @@ end
 local function enemyDeath(enemy)
     game:updateGold(enemy.reward)
 
+local function createDragEnemy()
+    local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
+    enemy.sprite = enemy
+    enemy.tag = "enemy"
+    enemy.damage = -15
+    enemy:setFillColor(1,1,0)
+    physics.addBody(enemy, "dynamic")
+
+    enemy:addEventListener("touch", function(event)
+        if event.phase == "began" then
+        event.target.markX = event.target.x
+        event.target.markY = event.target.y
+        elseif event.phase == "moved" then
+            local x = (event.x - event.xStart) + event.target.markX
+            local y = (event.y - event.yStart) + event.target.markY
+
+            event.target.x = x
+            event.target.y = y
+        end
+    end)
+
+    enemy.shape = enemy
+    enemy.shape.pp = enemy
+    enemy.HP = 100
+    function enemy:hit(pts)
+        self.HP = (self.HP or 1) - pts
+        print(self.HP)
+    end
+end
+
+function scene:resumeGame()
+    Runtime:dispatchEvent({name = "resumeGame"})
+    physics.start()
 end
 
 function scene:create(event)
@@ -287,6 +291,17 @@ function scene:create(event)
     createBg()
     createTowerBtns()
     createMenuBtns()
+
+    Tower.displayGroup = display.newGroup()
+    Enemy.displayGroup = display.newGroup()
+    sceneGroup:insert(Tower.displayGroup)
+    sceneGroup:insert(Enemy.displayGroup)
+
+    createDragEnemy()
+end
+
+function scene:destroy(event)
+    Runtime:dispatchEvent({name = "clearGame"})
 end
 
 function scene:show(event)
@@ -303,5 +318,6 @@ end
 
 scene:addEventListener("create", scene)
 scene:addEventListener("show", scene)
+scene:addEventListener("destroy", scene)
 
 return scene
