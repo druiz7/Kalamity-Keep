@@ -138,16 +138,15 @@ local function createBg()
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
     castle.strokeWidth = 4
-    physics.addBody(castle, "static", {isSensor = true})
+    physics.addBody(castle, "dynamic", {isSensor = true})
     castle:addEventListener("collision", function(event)
-        if(event.phase == "began" and event.other.tag == "enemy") then
-            --SHUJI IMPLEMENT THIS
-            game:updateHealth(-100) -- whatever health that is
+        if event.phase == "began" and event.other.tag == "enemy" then
+                event.other.sprite:removeSelf()
+                game:updateHealth(event.other.damage)
         end
     end)
 
     sceneGroup:insert(castle)
-    castle:toFront()
 
     --Creates the path
     local path = game.path
@@ -224,6 +223,36 @@ local function setUpGameObj(level)
     }
 end
 
+local function createDragEnemy()
+    local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
+    enemy.sprite = enemy
+    enemy.tag = "enemy"
+    enemy.damage = -15
+    enemy:setFillColor(1,1,0)
+    physics.addBody(enemy, "dynamic")
+
+    enemy:addEventListener("touch", function(event)
+        if event.phase == "began" then
+        event.target.markX = event.target.x
+        event.target.markY = event.target.y
+        elseif event.phase == "moved" then
+            local x = (event.x - event.xStart) + event.target.markX
+            local y = (event.y - event.yStart) + event.target.markY
+
+            event.target.x = x
+            event.target.y = y
+        end
+    end)
+
+    enemy.shape = enemy
+    enemy.shape.pp = enemy
+    enemy.HP = 100
+    function enemy:hit(pts)
+        self.HP = (self.HP or 1) - pts
+        print(self.HP)
+    end
+end
+
 function scene:resumeGame()
     Runtime:dispatchEvent({name = "resumeGame"})
     physics.start()
@@ -241,6 +270,8 @@ function scene:create(event)
     Enemy.displayGroup = display.newGroup()
     sceneGroup:insert(Tower.displayGroup)
     sceneGroup:insert(Enemy.displayGroup)
+
+    createDragEnemy()
 end
 
 function scene:destroy(event)
