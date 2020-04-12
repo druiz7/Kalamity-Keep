@@ -5,7 +5,6 @@ local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
---physics.setDrawMode("hybrid")
 
 local composer = require("composer")
 local scene = composer.newScene()
@@ -136,10 +135,19 @@ local function createBg()
     castle.fill.scaleY = 256 / castle.height
     castle:setStrokeColor(0, 0, 0)
     castle.strokeWidth = 4
-    physics.addBody(castle, "static", {isSensor = true})
+    physics.addBody(castle, "dynamic", {isSensor = true})
+
     castle:addEventListener("collision", function(event)
         --SHUJI IMPLEMENT THIS
-        game:updateHealth(-100) -- whatever health that is
+        print("+++++++++++++++++++++++++++++++++")
+        if(event.other.tag == 'enemy') then
+            print("hit")
+            print("what am I looking at????: ")
+            apple = event.other.tag
+            print(apple)
+            --> game:updateHealth(-event.other.enemy.damage)
+            game:updateHealth(-10) -- whatever health that is
+        end
     end)
 
     sceneGroup:insert(castle)
@@ -243,6 +251,35 @@ local function setUpGameObj(level)
     }
 end
 
+local function summonBarb(x, y)
+    local barb = barbarian:new({xSpawn=x, ySpawn=y})
+    barb:spawn()
+    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
+ 
+    barb:move(game.logArr)
+end
+
+local function summonLiz(x, y)
+    local liz = lizard:new({xSpawn=x, ySpawn=y})
+    liz:spawn()
+    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
+ 
+    liz:move(game.logArr)
+end
+
+local function summonTroll(x, y)
+    local troll = troll:new({xSpawn=x, ySpawn=y})
+    troll:spawn()
+    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
+ 
+    troll:move(game.logArr)
+end
+
+local function enemyDeath(enemy)
+    game:updateGold(enemy.reward)
+
+end
+
 function scene:create(event)
     sceneGroup = self.view
 
@@ -252,6 +289,19 @@ function scene:create(event)
     createMenuBtns()
 end
 
+function scene:show(event)
+    local sceneGroup = self.view
+    local phase = event.phase
+
+    if (phase == "will") then
+    end
+
+    if (phase == "did") then
+        summonBarb(75, 910)
+    end
+end
+
 scene:addEventListener("create", scene)
+scene:addEventListener("show", scene)
 
 return scene
