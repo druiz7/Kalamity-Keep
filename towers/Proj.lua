@@ -21,16 +21,15 @@ end
 
 function Proj:chase()
     self.shape.tid = timer.performWithDelay(100, function (e) 
-        if not (self.enemy and  pcall(function () self:chaseIt() end) )then
-            if (not self.shape) then
+        if not (self.enemy and pcall(function () self:chaseIt() end)) then
+            if (self.shape) then
                 pcall(function()
-                            timer.cancel(self.shape.tid)
-                            self.shape:removeSelf()
-                            self.shape = nil
-                        end
-                    )
-                end
+                    timer.cancel(self.shape.tid)
+                    self.shape:removeSelf()
+                    self.shape = nil
+                end)
             end
+        end
     end, -1)
 end
 
