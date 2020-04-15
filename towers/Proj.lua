@@ -8,6 +8,7 @@ function Proj:new(o)
 end
 
 function Proj:spawn()
+    print("projectile created")
     self.shape = display.newRect(self.displayGroup, self.posX, self.posY, 50, 50)
     self.shape:setFillColor(unpack(self.color))
     physics.addBody(self.shape, "dynamic", {isSensor = true})
@@ -24,6 +25,7 @@ function Proj:chase()
         if not (self.enemy and pcall(function () self:chaseIt() end)) then
             if (self.shape) then
                 pcall(function()
+                    print("remove projectile")
                     timer.cancel(self.shape.tid)
                     self.shape:removeSelf()
                     self.shape = nil
@@ -37,7 +39,7 @@ function Proj:chaseIt()
     if (self.shape.moving == true) then
         transition.cancel(self.shape)
     end
-
+    print("chasing")
     self.shape.moving = true
     local V = 0.5 -- V = D / T → T = D / V
     local t = math.sqrt((self.enemy.shape.x - self.shape.x) ^ 2 + (self.enemy.shape.y - self.shape.y) ^ 2) / V
