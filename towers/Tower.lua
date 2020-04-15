@@ -103,17 +103,18 @@ function Tower:createRange()
 
         local enemyTriggered = event.other
         if (event.phase == "began") then
-            print("adding enemy to list")
             -- add enemy to enemies list
             local inTable = false
             for _, enemy in pairs(self.enemies) do
                 if enemy == enemyTriggered then
+                    print("enemy already in list")
                     inTable = true
                     break
                 end
             end
 
             if (not inTable) then
+                print("inserted to table")
                 table.insert(self.enemies, enemyTriggered)
             end
         elseif (event.phase == "ended") then
@@ -152,12 +153,12 @@ function Tower:attackEnemy()
     end
 
     -- now gets an enemy and attacks it if possible
-    local enemy = self:getEnemy()
-    if not enemy then
+    local targ = self:getEnemy()
+    if not targ then
         self:setSequence("idle")
     else
         -- rotates the tower if the enemy is infront or behind
-        if enemy.shape.x < self.posX then
+        if targ.x < self.posX then
             self.sprite.xScale = -1 * self.scaleFactor
         else
             self.sprite.xScale = self.scaleFactor
@@ -166,7 +167,7 @@ function Tower:attackEnemy()
         if not self.cooldown then
             self:setSequence("attack")
             self.cooldown = true
-            self:attack(enemy)
+            self:attack(targ)
 
             self.cooldownTimer =
                 timer.performWithDelay(
