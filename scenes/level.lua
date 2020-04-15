@@ -248,6 +248,7 @@ end
 
 local function enemyDeath(enemy)
     game:updateGold(enemy.reward)
+end
 
 local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
