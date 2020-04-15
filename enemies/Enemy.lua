@@ -16,8 +16,11 @@ function Enemy:spawn()
 	--> enemy creation expression
 	self:createSprite(self.xSpawn, self.ySpawn)
 	self.enemy = self.sprite
-	self.enemy.pp= self;      -- parent pointer to parent object
-	self.enemy.tag= self.tag; --“enemy”
+	self.enemy.pp = self;      -- parent pointer to parent object
+	self.enemy.tag = self.tag; --“enemy”
+	self.enemy.name = self.name; --name”
+	self.enemy.damage = self.damage; --damage”
+	self.enemy.HP = self.HP; --HP”
 
 	self.enemy.curX = 1
 	self.enemy.curY = 8
@@ -49,6 +52,7 @@ end
 
 --> function for when the enemy gets hit
 function Enemy:hit(damageNum)
+	print("got hit")
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
 		self.enemy:removeSelf();
@@ -59,16 +63,10 @@ end
 
 --> take the path made in game logic and use it to move the enemy
 function Enemy:move(enemyPath)
-	print("Previous position: ")
-	print("x: " .. self.enemy.lastX .. " y: " .. self.enemy.lastY)
-	print("current position: ")
-	print("x: " .. self.enemy.curX .. " y: " .. self.enemy.curY)
 
 	--> check right
-	print("check right")
 	if(enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
-		print("right")
-		transition.to(self.enemy, {time = 100, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curX = self.enemy.curX + 1
@@ -77,10 +75,8 @@ function Enemy:move(enemyPath)
 		})
 
 	--> check down
-	print("check down")
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
-		print("down")
-		transition.to(self.enemy, {time = 10, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curY = self.enemy.curY + 1
@@ -89,10 +85,8 @@ function Enemy:move(enemyPath)
 		})
 
 	--> check up
-	print("check up")
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
-		print("up")
-		transition.to(self.enemy, {time = 10, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curY = self.enemy.curY-1
@@ -101,10 +95,8 @@ function Enemy:move(enemyPath)
 		})
 
 	--> check left
-	print("check left")
 	elseif(enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
-		print("left")
-		transition.to(self.enemy, {time = 10, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.curX = self.enemy.curX - 1
@@ -114,7 +106,6 @@ function Enemy:move(enemyPath)
 
 	--> if there's nowhere else to go	
 		else
-		print("end")
 		transition.to(self.enemy, {time = 10, x=self.enemy.x+130, y=self.enemy.y})
 		-- self.HP = 0
 		-- self.enemy:removeSelf()
