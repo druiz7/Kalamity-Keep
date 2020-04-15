@@ -5,6 +5,7 @@ local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
+physics.setDrawMode("hybrid")
 
 local composer = require("composer")
 local scene = composer.newScene()
