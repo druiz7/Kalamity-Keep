@@ -141,8 +141,8 @@ local function createBg()
     physics.addBody(castle, "dynamic", {isSensor = true})
     castle:addEventListener("collision", function(event)
         if event.phase == "began" and event.other.tag == "enemy" then
-                event.other.sprite:removeSelf()
-                game:updateHealth(event.other.damage)
+                event.other:removeSelf()
+                game:updateHealth(-event.other.damage)
         end
     end)
 
@@ -197,9 +197,6 @@ local function createMenuBtns()
     sceneGroup:insert(game.gui_health)
     sceneGroup:insert(game.gui_pause)
 
-    Runtime:addEventListener("killedEnemy", function (event)
-        game:updateGold(event.target.reward);
-    end)
 end
 
 local function setUpGameObj(level)
@@ -248,7 +245,10 @@ local function summonTroll(x, y)
 end
 
 local function enemyDeath(enemy)
-    game:updateGold(enemy.reward)
+    Runtime:addEventListener("killedEnemy", function (event)
+        game:updateGold(event.target.reward);
+    end)
+    
 end
 
 local function createDragEnemy()
@@ -314,7 +314,9 @@ function scene:show(event)
     end
 
     if (phase == "did") then
-        summonBarb(75, 910)
+        --pull coordinates to start spawn from the level-data.json file
+        print(event.params.level)
+        summonBarb(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
     end
 end
 
