@@ -23,17 +23,19 @@ function Enemy:spawn()
 	self.enemy.HP = self.HP; --HP”
 	self.enemy.shape = self.sprite
 
+
 	self.enemy.curX = 1
-	self.enemy.curY = 8
+	self.enemy.curY = math.floor(self.ySpawn/12/9)
 	
-	self.enemy.lastX = 1
-	self.enemy.lastY = 1
+	self.enemy.lastX = 0
+	self.enemy.lastY = 0
 
 	physics.addBody(self.enemy, "kinematic"); 
 
 	Runtime:addEventListener("pause", self)
 	Runtime:addEventListener("resume", self)
 	Runtime:addEventListener("clear", self)
+	self.enemy:addEventListener("death", self)
 end
 
 function Enemy:createSprite(x,y)
@@ -56,6 +58,8 @@ function Enemy:hit(damageNum)
 	print("got hit")
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
+		transition.cancel(self.enemy)
+
 		self.enemy:removeSelf();
 		self.enemy=nil;
 		self = nil;
@@ -64,10 +68,16 @@ end
 
 --> take the path made in game logic and use it to move the enemy
 function Enemy:move(enemyPath)
-
+	print("Moving unit")
+	print("current X: " .. self.enemy.curX .. " current Y: " .. self.enemy.curY)
+	print("last X: " .. self.enemy.lastX .. " last Y: " .. self.enemy.lastY)
 	--> check right
-	if(enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
-		transition.to(self.enemy, {time = 500, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
+
+	if(enemyPath[self.enemy.curX+1][self.enemy.curY] and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
+		print("\nmoved right")
+		transition.to(self.enemy, {time = 50, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
+			print("X: " .. self.enemy.lastX)
+			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curX = self.enemy.curX + 1
@@ -77,7 +87,10 @@ function Enemy:move(enemyPath)
 
 	--> check down
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
-		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
+		print("\nmoved down")
+		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
+			print("X: " .. self.enemy.lastX)
+			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curY = self.enemy.curY + 1
@@ -87,7 +100,10 @@ function Enemy:move(enemyPath)
 
 	--> check up
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
-		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
+		print("\nmoved up")
+		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
+			print("X: " .. self.enemy.lastX)
+			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.curY = self.enemy.curY-1
@@ -97,7 +113,10 @@ function Enemy:move(enemyPath)
 
 	--> check left
 	elseif(enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
-		transition.to(self.enemy, {time = 500, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
+		print("\nmoved down")
+		transition.to(self.enemy, {time = 50, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
+			print("X: " .. self.enemy.lastX)
+			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastY = self.enemy.curY
 			self.enemy.lastX = self.enemy.curX
 			self.enemy.curX = self.enemy.curX - 1
@@ -106,18 +125,14 @@ function Enemy:move(enemyPath)
 		})
 
 	--> if there's nowhere else to go	
-		else
-		transition.to(self.enemy, {time = 10, x=self.enemy.x+130, y=self.enemy.y})
-		-- self.HP = 0
-		-- self.enemy:removeSelf()
-		-- self.enemy = nil
+	else
+		transition.to(self.enemy, {time = 500, x=self.enemy.x+130, y=self.enemy.y})
 	end
 end
 
 -- custom event for the enemy dying
 function Enemy:death(event)
 	--something here to give the user money, take health from the user,  other actions for when the enemy either dies or reaches the end
-	game:updateHealth(self.reward)
 	self.enemy:removeSelf()
 	self.enemy = nil
 end
