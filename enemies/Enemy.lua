@@ -72,10 +72,13 @@ function Enemy:move(enemyPath)
 	print("current X: " .. self.enemy.curX .. " current Y: " .. self.enemy.curY)
 	print("last X: " .. self.enemy.lastX .. " last Y: " .. self.enemy.lastY)
 	--> check right
-
-	if(enemyPath[self.enemy.curX+1][self.enemy.curY] and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
+	if(enemyPath[self.enemy.curX+1][self.enemy.curY]) then
+		print("haha")
+	end
+	
+	if(enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
 		print("\nmoved right")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
 			print("X: " .. self.enemy.lastX)
 			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
@@ -88,7 +91,7 @@ function Enemy:move(enemyPath)
 	--> check down
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
 		print("\nmoved down")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
 			print("X: " .. self.enemy.lastX)
 			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
@@ -101,7 +104,7 @@ function Enemy:move(enemyPath)
 	--> check up
 	elseif(enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
 		print("\nmoved up")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
 			print("X: " .. self.enemy.lastX)
 			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastX = self.enemy.curX
@@ -114,7 +117,7 @@ function Enemy:move(enemyPath)
 	--> check left
 	elseif(enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
 		print("\nmoved down")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
+		transition.to(self.enemy, {time = 500, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
 			print("X: " .. self.enemy.lastX)
 			print("Y: " .. self.enemy.lastY)
 			self.enemy.lastY = self.enemy.curY
