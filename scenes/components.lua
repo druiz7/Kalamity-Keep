@@ -39,7 +39,7 @@ function _M.createPauseBtn(game)
     local group = display.newGroup()
     local image = display.newImage(group, "./assets/buttons/pause.png", 1920 - 100, 100)
 
-    local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level}};
+    local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level, status = "paused"}};
     image:addEventListener("tap", function (event)
         Runtime:dispatchEvent({name = "pauseGame"})
         physics.pause()
