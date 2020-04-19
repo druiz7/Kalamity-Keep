@@ -12,7 +12,7 @@ function scene:create( event )
 
     local background = display.newRect(0, 0, 1920, 1080);
     background.anchorX = 0; background.anchorY = 0;
-    background.fill = {type = "image", filename = "assets/Kalamity_Keep_bg.png"};
+    background.fill = {type = "image", filename = "assets/backgrounds/Kalamity_Keep_bg.png"};
     background:toBack();
 
     local lev1 = display.newRect( display.contentCenterX - 500, display.contentCenterY + 80, 380, 100);
