@@ -5,7 +5,6 @@ local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
-physics.setDrawMode("hybrid")
 
 local composer = require("composer")
 local scene = composer.newScene()
@@ -141,8 +140,8 @@ local function createBg()
     physics.addBody(castle, "dynamic", {isSensor = true})
     castle:addEventListener("collision", function(event)
         if event.phase == "began" and event.other.tag == "enemy" then
-                event.other:removeSelf()
                 game:updateHealth(-event.other.damage)
+                event.other.pp:clearGame()
         end
     end)
 

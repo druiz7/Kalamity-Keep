@@ -31,9 +31,9 @@ function Enemy:spawn()
 
 	physics.addBody(self.enemy, "kinematic"); 
 
-	Runtime:addEventListener("pause", self)
-	Runtime:addEventListener("resume", self)
-	Runtime:addEventListener("clear", self)
+	Runtime:addEventListener("pauseGame", self)
+	Runtime:addEventListener("resumeGame", self)
+	Runtime:addEventListener("clearGame", self)
 	self.enemy:addEventListener("death", self)
 end
 
@@ -59,65 +59,79 @@ function Enemy:hit(damageNum)
 	if (self.HP <= 0) then
 		transition.cancel(self.enemy)
 
-		self.enemy:removeSelf();
-		self.enemy=nil;
-		self = nil;
+		self:death()
+	end
+end
+
+function Enemy:moveEnemy(enemyPath)
+	print("Moving unit")
+	print("current X: " .. self.enemy.curX .. " current Y: " .. self.enemy.curY)
+	print("last X: " .. self.enemy.lastX .. " last Y: " .. self.enemy.lastY)
+
+	if(self.enemy.curX ~= #enemyPath and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
+		print("\nmoved right")
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y, onComplete= function() 
+			pcall(function()
+				self.enemy.lastX = self.enemy.curX
+				self.enemy.lastY = self.enemy.curY
+				self.enemy.curX = self.enemy.curX + 1
+				self:move(enemyPath)
+			end)
+		end})
+		
+	--> check down
+	elseif(self.enemy.curY ~= #enemyPath[1] and enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
+		print("\nmoved down")
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y+100, onComplete= function() 
+			pcall(function()
+				self.enemy.lastX = self.enemy.curX
+				self.enemy.lastY = self.enemy.curY
+				self.enemy.curY = self.enemy.curY + 1
+				self:move(enemyPath)
+			end)
+		end})
+		
+	--> check up
+	elseif(self.enemy.curY ~= 1 and enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
+		print("\nmoved up")
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y-100, onComplete= function() 
+			pcall(function()
+				self.enemy.lastX = self.enemy.curX
+				self.enemy.lastY = self.enemy.curY
+				self.enemy.curY = self.enemy.curY-1
+				self:move(enemyPath)
+			end)
+		end})
+		
+	--> check left
+	elseif(self.enemy.curX ~= 1 and enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
+		print("\nmoved down")
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x-130, y=self.enemy.y, onComplete= function() 
+			pcall(function()
+				self.enemy.lastY = self.enemy.curY
+				self.enemy.lastX = self.enemy.curX
+				self.enemy.curX = self.enemy.curX - 1
+				self:move(enemyPath)
+			end)
+		end})
+		
+	--> if there's nowhere else to go
+	else
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y})
 	end
 end
 
 --> take the path made in game logic and use it to move the enemy
 function Enemy:move(enemyPath)
-
-	if(self.enemy.curX ~= #enemyPath and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
-		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y, onComplete=function()
-			self.enemy.lastX = self.enemy.curX
-			self.enemy.lastY = self.enemy.curY
-			self.enemy.curX = self.enemy.curX + 1
-			self:move(enemyPath)
-		end
-		})
-
-	--> check down
-	elseif(self.enemy.curY ~= #enemyPath[1] and enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
-		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y+100, onComplete=function()
-			self.enemy.lastX = self.enemy.curX
-			self.enemy.lastY = self.enemy.curY
-			self.enemy.curY = self.enemy.curY + 1
-			self:move(enemyPath)
-		end
-		})
-
-	--> check up
-	elseif(self.enemy.curY ~= 1 and enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
-		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y-100, onComplete=function()
-			self.enemy.lastX = self.enemy.curX
-			self.enemy.lastY = self.enemy.curY
-			self.enemy.curY = self.enemy.curY-1
-			self:move(enemyPath)
-		end
-		})
-
-	--> check left
-	elseif(self.enemy.curX ~= 1 and enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
-		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x-130, y=self.enemy.y, onComplete=function()
-			self.enemy.lastY = self.enemy.curY
-			self.enemy.lastX = self.enemy.curX
-			self.enemy.curX = self.enemy.curX - 1
-			self:move(enemyPath)
-		end
-		})
-
-	--> if there's nowhere else to go	
-	else
-		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y})
+	if not pcall(self.moveEnemy, self, enemyPath) then
+		print("failed to move enemy")
 	end
 end
 
 -- custom event for the enemy dying
 function Enemy:death(event)
 	--something here to give the user money, take health from the user,  other actions for when the enemy either dies or reaches the end
-	self.enemy:removeSelf()
-	self.enemy = nil
+	self:clearGame()
 end
 
 --> get the remaining health of the enemy
@@ -126,23 +140,23 @@ function Enemy:getHealth()
 end
 
 -- function to stop the movement of the enemies when the pause button is pressed
-function Enemy:pause()
+function Enemy:pauseGame()
 	self.enemy:pause()
 
 	transition.pause()
 end
 
 -- fuction to resume the movement o the enemies when the resume button is pressed.
-function Enemy:resume()
+function Enemy:resumeGame()
 	self.enemy:play()
 
 	transition.resume()
 end
 
-function Enemy:clear()
-	Runtime:removeEventListener("pause", self)
-	Runtime:removeEventListener("resume", self)
-	Runtime:removeEventListener("clear", self)
+function Enemy:clearGame()
+	Runtime:removeEventListener("pauseGame", self)
+	Runtime:removeEventListener("resumeGame", self)
+	Runtime:removeEventListener("clearGame", self)
 	self.enemy:removeSelf()
 	self.enemy=nil
 end
