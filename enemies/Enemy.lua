@@ -23,7 +23,6 @@ function Enemy:spawn()
 	self.enemy.HP = self.HP; --HP”
 	self.enemy.shape = self.sprite
 
-
 	self.enemy.curX = 1
 	self.enemy.curY = math.floor(self.ySpawn/12/9)
 	
@@ -71,7 +70,7 @@ function Enemy:moveEnemy(enemyPath)
 
 	if(self.enemy.curX ~= #enemyPath and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
 		print("\nmoved right")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x+130, y=self.enemy.y, onComplete= function() 
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
 				self.enemy.lastY = self.enemy.curY
@@ -83,7 +82,7 @@ function Enemy:moveEnemy(enemyPath)
 	--> check down
 	elseif(self.enemy.curY ~= #enemyPath[1] and enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
 		print("\nmoved down")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y+100, onComplete= function() 
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y+100, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
 				self.enemy.lastY = self.enemy.curY
@@ -95,7 +94,7 @@ function Enemy:moveEnemy(enemyPath)
 	--> check up
 	elseif(self.enemy.curY ~= 1 and enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
 		print("\nmoved up")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x, y=self.enemy.y-100, onComplete= function() 
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y-100, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
 				self.enemy.lastY = self.enemy.curY
@@ -107,7 +106,7 @@ function Enemy:moveEnemy(enemyPath)
 	--> check left
 	elseif(self.enemy.curX ~= 1 and enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
 		print("\nmoved down")
-		transition.to(self.enemy, {time = 50, x=self.enemy.x-130, y=self.enemy.y, onComplete= function() 
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x-130, y=self.enemy.y, onComplete= function() 
 			pcall(function()
 				self.enemy.lastY = self.enemy.curY
 				self.enemy.lastX = self.enemy.curX
@@ -118,11 +117,7 @@ function Enemy:moveEnemy(enemyPath)
 		
 	--> if there's nowhere else to go
 	else
-		transition.to(self.enemy, {time = 50, x=self.enemy.x+130, y=self.enemy.y})
-		print("right: " .. enemyPath[self.enemy.curX+1][self.enemy.curY])
-		print("up: " .. enemyPath[self.enemy.curX][self.enemy.curY-1])
-		print("down" .. enemyPath[self.enemy.curX][self.enemy.curY+1])
-		print("left" .. enemyPath[self.enemy.curX-1][self.enemy.curY])
+		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y})
 	end
 end
 
