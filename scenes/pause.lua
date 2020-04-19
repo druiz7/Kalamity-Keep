@@ -1,40 +1,71 @@
 local composer = require( "composer" )
 
+local xx = display.contentCenterX
+local yy = display.contentCenterY
+
 local scene = composer.newScene()
 
 function scene:create(event)
     local sceneGroup = self.view
-
-    local shadow = display.newRect(sceneGroup, display.contentCenterX, display.contentCenterY, display.contentWidth, display.contentHeight)
+    local status = event.params.status
+    local shadow = display.newRect(sceneGroup, xx, yy, display.contentWidth, display.contentHeight)
     shadow:setFillColor(0,0,0,0.5)
-    shadow:addEventListener("tap", function()
-        composer.hideOverlay( "fade", 400 )
-    end)
 
-    local pauseBg = display.newImage(sceneGroup, "./assets/buttons/pause-bg.png", display.contentCenterX, display.contentCenterY)
+    local pauseBg = display.newImage(sceneGroup, "./assets/buttons/pause-bg.png", xx, yy)
     pauseBg:scale(4,4)
     pauseBg:addEventListener("tap", function () return true end)
 
     local btnScale = 1.5
-    local playBtn = display.newImage(sceneGroup, "./assets/buttons/play.png", display.contentCenterX - 300, display.contentCenterY)
-    playBtn:scale(btnScale,btnScale)
-    playBtn:addEventListener("tap", function ()
-        composer.hideOverlay( "fade", 400 )
-    end)
 
-    local restartBtn = display.newImage(sceneGroup, "./assets/buttons/restart.png", display.contentCenterX, display.contentCenterY)
+    local topText
+    local restBtnX
+    local homeBtnX
+
+    if(status == "paused") then
+        topText = "PAUSED"
+        restBtnX = xx
+        homeBtnX = xx + 300
+
+        local playBtn = display.newImage(sceneGroup, "./assets/buttons/play.png", xx - 300, yy)
+        playBtn:scale(btnScale,btnScale)
+        playBtn:addEventListener("tap", function()
+            composer.hideOverlay( "fade", 400 )
+        end)
+
+        shadow:addEventListener("tap", function()
+            composer.hideOverlay( "fade", 400 )
+        end)
+
+    else
+        restBtnX = xx - 200
+        homeBtnX = xx + 200
+
+        if(status == "won") then
+            topText = "YOU WIN!"
+        else
+            topText = "YOU LOSE!"
+        end
+    end
+
+    for _, name in ipairs(native.getFontNames()) do
+        print(name)
+    end
+
+    local topText = display.newText(sceneGroup, topText, xx, yy - 300, "ComicSansMS-Bold", 128)
+
+    local restartBtn = display.newImage(sceneGroup, "./assets/buttons/restart.png", restBtnX, yy)
     restartBtn:scale(btnScale,btnScale)
     restartBtn:addEventListener("tap", function ()
         composer.gotoScene("scenes.proxy", {effect = "fade", time = 0, params = {level = event.params.level}})
     end)
 
-    local homeBtn = display.newImage(sceneGroup, "./assets/buttons/home.png", display.contentCenterX + 300, display.contentCenterY)
+    local homeBtn = display.newImage(sceneGroup, "./assets/buttons/home.png", homeBtnX, yy)
     homeBtn:scale(btnScale,btnScale)
     homeBtn:addEventListener("tap", function()
         composer.gotoScene("scenes.main_menu", {effect = "fade", time = 250})
     end)
 
-    sceneGroup:toFront()
+
 end
 
 function scene:hide( event )

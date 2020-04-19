@@ -5,7 +5,6 @@ local json = require("json")
 local physics = require("physics")
 physics.start()
 physics.setGravity(0, 0)
-physics.setDrawMode("hybrid")
 
 local composer = require("composer")
 local scene = composer.newScene()
@@ -141,8 +140,8 @@ local function createBg()
     physics.addBody(castle, "dynamic", {isSensor = true})
     castle:addEventListener("collision", function(event)
         if event.phase == "began" and event.other.tag == "enemy" then
-                event.other:removeSelf()
                 game:updateHealth(-event.other.damage)
+                event.other.pp:clearGame()
         end
     end)
 
@@ -220,35 +219,53 @@ local function setUpGameObj(level)
     }
 end
 
+-- Event listener to check if the enemy has died or not
+local function check(event)
+    if(event.other ~= castle and self.HP == 0) then
+        game:updateGold(self.reward)
+    end
+end
+
 local function summonBarb(x, y)
+    print("summon barbarian")
     local barb = barbarian:new({xSpawn=x, ySpawn=y})
     barb:spawn()
-    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
- 
+    
     barb:move(game.logArr)
 end
 
 local function summonLiz(x, y)
+    print("summon lizard")
     local liz = lizard:new({xSpawn=x, ySpawn=y})
     liz:spawn()
-    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
  
     liz:move(game.logArr)
 end
 
 local function summonTroll(x, y)
+    print("summon troll")
     local troll = troll:new({xSpawn=x, ySpawn=y})
     troll:spawn()
-    --enemyTimer = timer.performWithDelay(10000, barb:move(game.logArr), 0)
  
     troll:move(game.logArr)
 end
 
-local function enemyDeath(enemy)
-    Runtime:addEventListener("killedEnemy", function (event)
-        game:updateGold(event.target.reward);
-    end)
-    
+--> functions to summon the enemy troops
+local function barbUnit(x,y)
+    print("barb troop")
+    timer.performWithDelay(800, function() summonBarb(x,y) end, 5)
+end
+
+local function lizUnit(x,y)
+    print("liz troop")
+    timer.performWithDelay(750, function() summonLiz(x,y) end, 3)
+
+end
+
+local function trollUnit(x,y)
+    print("troll troop")
+    timer.performWithDelay(1000, function() summonTroll(x,y) end, 2)
+
 end
 
 local function createDragEnemy()
@@ -315,8 +332,11 @@ function scene:show(event)
 
     if (phase == "did") then
         --pull coordinates to start spawn from the level-data.json file
+
         print(event.params.level)
-        summonBarb(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
+        barbUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
+        --lizUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
+        --trollUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
     end
 end
 

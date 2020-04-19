@@ -1,6 +1,6 @@
 local Enemy = require("enemies.Enemy")
 
-local lizard = Enemy:new( {name='lizard', HP=1, damage=1, speed=3} )
+local lizard = Enemy:new( {name='lizard', HP=1, damage=1, speed=1.5} )
 
 
 function lizard:new(o)    --constructor
