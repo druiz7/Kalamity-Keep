@@ -21,7 +21,6 @@ function Enemy:spawn()
 	self.enemy.name = self.name; --name”
 	self.enemy.damage = self.damage; --damage”
 	self.enemy.HP = self.HP; --HP”
-	self.enemy.shape = self.sprite
 
 	self.enemy.curX = 1
 	self.enemy.curY = math.floor(self.ySpawn/12/9)
