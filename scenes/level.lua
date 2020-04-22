@@ -219,54 +219,30 @@ local function setUpGameObj(level)
     }
 end
 
--- Event listener to check if the enemy has died or not
-local function check(event)
-    if(event.other ~= castle and self.HP == 0) then
-        game:updateGold(self.reward)
-    end
+-- round 1
+-- 2 waves of barbarians
+local function wave1()
+    timer.performWithDelay(4000, function() barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end, 2)
 end
 
-local function summonBarb(x, y)
-    print("summon barbarian")
-    local barb = barbarian:new({xSpawn=x, ySpawn=y})
-    barb:spawn()
-    
-    barb:move(game.logArr)
+-- round 2
+-- 2 waves of barbarians
+-- wave of speedy lizards
+local function wave2()
+    wave1()
+    timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
-local function summonLiz(x, y)
-    print("summon lizard")
-    local liz = lizard:new({xSpawn=x, ySpawn=y})
-    liz:spawn()
- 
-    liz:move(game.logArr)
+local function wave3()
+    wave2()
+    timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
-local function summonTroll(x, y)
-    print("summon troll")
-    local troll = troll:new({xSpawn=x, ySpawn=y})
-    troll:spawn()
- 
-    troll:move(game.logArr)
-end
+-- round 3
+-- 2 waves of barbarians
+-- wave of speedy lizards
+-- spawn trolls
 
---> functions to summon the enemy troops
-local function barbUnit(x,y)
-    print("barb troop")
-    timer.performWithDelay(800, function() summonBarb(x,y) end, 5)
-end
-
-local function lizUnit(x,y)
-    print("liz troop")
-    timer.performWithDelay(750, function() summonLiz(x,y) end, 3)
-
-end
-
-local function trollUnit(x,y)
-    print("troll troop")
-    timer.performWithDelay(1000, function() summonTroll(x,y) end, 2)
-
-end
 
 local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
@@ -334,9 +310,20 @@ function scene:show(event)
         --pull coordinates to start spawn from the level-data.json file
 
         print(event.params.level)
-        barbUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
-        --lizUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
-        --trollUnit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40)
+
+        print("x position: " .. game.path.x + game.path.verticies[1] + 65)
+        print("y position: " .. game.path.y + game.path.verticies[2] + 40)
+
+        wave1()
+
+        timer.performWithDelay(33000, function() wave2() end)
+
+        timer.performWithDelay(67000, function() wave3() end)
+
+
+        -- barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
+        -- lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
+        -- troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
     end
 end
 
