@@ -272,7 +272,7 @@ local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
     enemy.sprite = enemy
     enemy.tag = "enemy"
-    enemy.damage = 15
+    enemy.damage = 150
     enemy:setFillColor(1,1,0)
     physics.addBody(enemy, "dynamic")
 

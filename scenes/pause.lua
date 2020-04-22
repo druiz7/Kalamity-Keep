@@ -5,9 +5,12 @@ local yy = display.contentCenterY
 
 local scene = composer.newScene()
 
+local status
+
 function scene:create(event)
     local sceneGroup = self.view
-    local status = event.params.status
+    status = event.params.status
+
     local shadow = display.newRect(sceneGroup, xx, yy, display.contentWidth, display.contentHeight)
     shadow:setFillColor(0,0,0,0.5)
 
@@ -47,10 +50,6 @@ function scene:create(event)
         end
     end
 
-    for _, name in ipairs(native.getFontNames()) do
-        print(name)
-    end
-
     local topText = display.newText(sceneGroup, topText, xx, yy - 300, "ComicSansMS-Bold", 128)
 
     local restartBtn = display.newImage(sceneGroup, "./assets/buttons/restart.png", restBtnX, yy)
@@ -73,7 +72,7 @@ function scene:hide( event )
     local phase = event.phase
     local parent = event.parent  -- Reference to the parent scene object
 
-    if ( phase == "did" ) then
+    if ( phase == "did" and status == "paused") then
         parent:resumeGame()
     end
 end
