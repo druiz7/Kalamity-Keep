@@ -10,5 +10,19 @@ function barbarian:new(o)    --constructor
 	return o;
 end
 
+function barbarian:unit(x,y, logArr)
+    pcall( 
+		function()
+		print("barb troop")
+		print("x: " .. x)
+		print("y: " .. y)
+		timer.performWithDelay(800, 
+			function() 
+				print("summon barbarian here")
+				local barb = self:new({xSpawn=x, ySpawn=y})
+				barb:spawn(logArr)
+			end,5)
+	end)
+end
 
 return barbarian
