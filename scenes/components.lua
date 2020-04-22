@@ -29,6 +29,15 @@ function _M.createHealth(game)
 
     function game:updateHealth(amount)
         self.health = self.health + amount
+
+        if  self.health <= 0 then
+            self.health = 0
+            local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level, status = "lost"}};
+            Runtime:dispatchEvent({name = "pauseGame"})
+            physics.pause()
+            composer.showOverlay("scenes.pause", options );
+        end
+
         text.text = self.health .. " hp"
     end
 

@@ -42,9 +42,9 @@ function Proj:chaseIt()
     print("chasing")
     self.shape.moving = true
     local V = 0.5 -- V = D / T → T = D / V
-    local t = math.sqrt((self.enemy.shape.x - self.shape.x) ^ 2 + (self.enemy.shape.y - self.shape.y) ^ 2) / V
+    local t = math.sqrt((self.enemy.x - self.shape.x) ^ 2 + (self.enemy.y - self.shape.y) ^ 2) / V
 
-    transition.to(self.shape, {time = t, x = self.enemy.shape.x, y = self.enemy.shape.y})
+    transition.to(self.shape, {time = t, x = self.enemy.x, y = self.enemy.y})
 end
 
 function Proj:collision(event)

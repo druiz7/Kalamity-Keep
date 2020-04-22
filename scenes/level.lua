@@ -248,7 +248,7 @@ local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
     enemy.sprite = enemy
     enemy.tag = "enemy"
-    enemy.damage = -15
+    enemy.damage = 150
     enemy:setFillColor(1,1,0)
     physics.addBody(enemy, "dynamic")
 
@@ -265,12 +265,15 @@ local function createDragEnemy()
         end
     end)
 
-    enemy.shape = enemy
-    enemy.shape.pp = enemy
+    enemy.pp = enemy
     enemy.HP = 100
     function enemy:hit(pts)
         self.HP = (self.HP or 1) - pts
         print(self.HP)
+    end
+
+    function enemy:clearGame()
+        enemy:removeSelf()
     end
 end
 
