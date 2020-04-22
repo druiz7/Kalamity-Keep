@@ -2,7 +2,6 @@ local Enemy = require("enemies.Enemy")
 
 local troll = Enemy:new( {name='troll', HP=3, damage=3, speed=.5} )
 
-
 function troll:new(o)    --constructor
 	o = o or {}; 
 	setmetatable(o, self);
@@ -10,5 +9,19 @@ function troll:new(o)    --constructor
 	return o;
 end
 
+function troll:unit(x,y, logArr)
+    pcall( 
+		function()
+		print("troll troop")
+		print("x: " .. x)
+		print("y: " .. y)
+		timer.performWithDelay(800, 
+			function() 
+				print("summon barbarian here")
+				local troll = self:new({xSpawn=x, ySpawn=y})
+				troll:spawn(logArr)
+			end,3)
+	end)
+end
 
 return troll
