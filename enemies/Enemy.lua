@@ -12,7 +12,7 @@ function Enemy:new(o)    --constructor
 end
 
 --> spawn the enemies, same way David spawned in the towers
-function Enemy:spawn()
+function Enemy:spawn(enemyPath)
 	--> enemy creation expression
 	self:createSprite(self.xSpawn, self.ySpawn)
 	self.enemy = self.sprite
@@ -35,6 +35,8 @@ function Enemy:spawn()
 	Runtime:addEventListener("resumeGame", self)
 	Runtime:addEventListener("clearGame", self)
 	self.enemy:addEventListener("death", self)
+
+	self:move(enemyPath)
 end
 
 function Enemy:createSprite(x,y)
@@ -142,14 +144,12 @@ end
 -- function to stop the movement of the enemies when the pause button is pressed
 function Enemy:pauseGame()
 	self.enemy:pause()
-
 	transition.pause()
 end
 
 -- fuction to resume the movement o the enemies when the resume button is pressed.
 function Enemy:resumeGame()
 	self.enemy:play()
-
 	transition.resume()
 end
 
@@ -162,4 +162,3 @@ function Enemy:clearGame()
 end
 
 return Enemy
-
