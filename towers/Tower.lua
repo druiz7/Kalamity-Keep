@@ -130,6 +130,7 @@ function Tower:createRange()
 end
 
 function Tower:getEnemy()
+    print("enemy count = " .. #self.enemies)
     local enemy
     if (#self.enemies > 0) then
         enemy = self.enemies[math.random(#self.enemies)]
@@ -141,7 +142,7 @@ end
 function Tower:updateEnemies()
     -- updates the list of enemies to make sure they are all alive
     for index, enemy in pairs(self.enemies) do
-        if enemy and enemy.pp and (enemy.pp.HP < 1) then
+        if enemy and ((enemy.pp.HP < 1) or enemy.removed) then
             self.enemies[index] = nil
         end
     end

@@ -53,7 +53,6 @@ end
 
 --> function for when the enemy gets hit
 function Enemy:hit(damageNum)
-	print("got hit")
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
 		transition.cancel(self.enemy)
@@ -63,12 +62,12 @@ function Enemy:hit(damageNum)
 end
 
 function Enemy:moveEnemy(enemyPath)
-	print("Moving unit")
-	print("current X: " .. self.enemy.curX .. " current Y: " .. self.enemy.curY)
-	print("last X: " .. self.enemy.lastX .. " last Y: " .. self.enemy.lastY)
+	-- print("Moving unit")
+	-- print("current X: " .. self.enemy.curX .. " current Y: " .. self.enemy.curY)
+	-- print("last X: " .. self.enemy.lastX .. " last Y: " .. self.enemy.lastY)
 
 	if(self.enemy.curX ~= #enemyPath and enemyPath[self.enemy.curX+1][self.enemy.curY] == -1 and self.enemy.curX+1 ~= self.enemy.lastX) then
-		print("\nmoved right")
+		-- print("\nmoved right")
 		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x+130, y=self.enemy.y, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
@@ -80,7 +79,7 @@ function Enemy:moveEnemy(enemyPath)
 		
 	--> check down
 	elseif(self.enemy.curY ~= #enemyPath[1] and enemyPath[self.enemy.curX][self.enemy.curY+1] == -1 and self.enemy.curY+1 ~= self.enemy.lastY) then
-		print("\nmoved down")
+		-- print("\nmoved down")
 		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y+100, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
@@ -92,7 +91,7 @@ function Enemy:moveEnemy(enemyPath)
 		
 	--> check up
 	elseif(self.enemy.curY ~= 1 and enemyPath[self.enemy.curX][self.enemy.curY-1] == -1 and self.enemy.curY-1 ~= self.enemy.lastY) then
-		print("\nmoved up")
+		-- print("\nmoved up")
 		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x, y=self.enemy.y-100, onComplete= function() 
 			pcall(function()
 				self.enemy.lastX = self.enemy.curX
@@ -104,7 +103,7 @@ function Enemy:moveEnemy(enemyPath)
 		
 	--> check left
 	elseif(self.enemy.curX ~= 1 and enemyPath[self.enemy.curX-1][self.enemy.curY] == -1 and self.enemy.curX-1 ~= self.enemy.lastX) then
-		print("\nmoved down")
+		-- print("\nmoved down")
 		transition.to(self.enemy, {time = 500/self.speed, x=self.enemy.x-130, y=self.enemy.y, onComplete= function() 
 			pcall(function()
 				self.enemy.lastY = self.enemy.curY
@@ -151,10 +150,13 @@ function Enemy:resumeGame()
 end
 
 function Enemy:clearGame()
+	print("clearGame")
 	Runtime:removeEventListener("pauseGame", self)
 	Runtime:removeEventListener("resumeGame", self)
 	Runtime:removeEventListener("clearGame", self)
+
 	self.enemy:removeSelf()
+	self.enemy.removed = true
 	self.enemy=nil
 end
 
