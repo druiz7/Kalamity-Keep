@@ -12,7 +12,7 @@ function Enemy:new(o)    --constructor
 end
 
 --> spawn the enemies, same way David spawned in the towers
-function Enemy:spawn(enemyPath)
+function Enemy:spawn()
 	--> enemy creation expression
 	self:createSprite(self.xSpawn, self.ySpawn)
 	self.enemy = self.sprite
@@ -34,8 +34,6 @@ function Enemy:spawn(enemyPath)
 	Runtime:addEventListener("resumeGame", self)
 	Runtime:addEventListener("clearGame", self)
 	self.enemy:addEventListener("death", self)
-
-	self:move(enemyPath)
 end
 
 function Enemy:createSprite(x,y)
