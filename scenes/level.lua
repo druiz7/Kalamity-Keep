@@ -39,9 +39,6 @@ local function zoneHandler(event)
     clickPosX = math.ceil(clickPosX / 130)
     clickPosY = math.ceil(clickPosY / 100)
 
-    --print(clickPosX);
-    --print(clickPosY);
-
     --Converts the clickPos coordinates back into x,y coordinates
     local _x, _y = zone:localToContent(-715 + 130 * (clickPosX - 1), -400 + 100 * (clickPosY - 1))
 
