@@ -104,25 +104,14 @@ function Tower:createRange()
         local enemyTriggered = event.other
         if (event.phase == "began") then
             -- add enemy to enemies list
-            local inTable = false
-            for _, enemy in pairs(self.enemies) do
-                if enemy == enemyTriggered then
-                    print("enemy already in list")
-                    inTable = true
-                    break
-                end
-            end
-
-            if (not inTable) then
-                print("inserted to table")
-                table.insert(self.enemies, enemyTriggered)
-            end
+            print("inserted enemy into table")
+            table.insert(self.enemies, enemyTriggered)
         elseif (event.phase == "ended") then
-            print("removing enemy from list")
+            print("removing enemy from table")
             -- remove enemy from enemies list
             for i, enemy in pairs(self.enemies) do
                 if (enemy == enemyTriggered) then
-                    self.enemies[i] = nil
+                    table.remove(self.enemies, i)
                 end
             end
         end
@@ -130,7 +119,6 @@ function Tower:createRange()
 end
 
 function Tower:getEnemy()
-    print("enemy count = " .. #self.enemies)
     local enemy
     if (#self.enemies > 0) then
         enemy = self.enemies[math.random(#self.enemies)]

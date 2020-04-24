@@ -24,7 +24,7 @@ function Enemy:spawn()
 
 	self.enemy.curX = 1
 	self.enemy.curY = math.floor(self.ySpawn/12/9)
-	
+
 	self.enemy.lastX = 0
 	self.enemy.lastY = 0
 
