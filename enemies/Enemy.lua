@@ -152,7 +152,6 @@ function Enemy:resumeGame()
 end
 
 function Enemy:clearGame()
-	print("clearGame")
 	Runtime:removeEventListener("pauseGame", self)
 	Runtime:removeEventListener("resumeGame", self)
 	Runtime:removeEventListener("clearGame", self)
