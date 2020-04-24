@@ -104,10 +104,8 @@ function Tower:createRange()
         local enemyTriggered = event.other
         if (event.phase == "began") then
             -- add enemy to enemies list
-            print("inserted enemy into table")
             table.insert(self.enemies, enemyTriggered)
         elseif (event.phase == "ended") then
-            print("removing enemy from table")
             -- remove enemy from enemies list
             for i, enemy in pairs(self.enemies) do
                 if (enemy == enemyTriggered) then
@@ -119,9 +117,17 @@ function Tower:createRange()
 end
 
 function Tower:getEnemy()
-    local enemy
-    if (#self.enemies > 0) then
-        enemy = self.enemies[math.random(#self.enemies)]
+    if #self.enemies == 0 then return nil end
+
+    -- gets enemy with furthest dist
+    local currTime = os.clock()
+    local enemy, larDist
+    for _, e in pairs(self.enemies) do
+        local eDist = (currTime - e.spwnTime) * e.pp.speed
+        if(not enemy or eDist > larDist) then
+            enemy = e
+            larDist = eDist
+        end
     end
 
     return enemy
@@ -158,14 +164,10 @@ function Tower:attackEnemy()
             self.cooldown = true
             self:attack(targ)
 
-            self.cooldownTimer =
-                timer.performWithDelay(
-                self.cooldownTime,
-                function()
-                    self.cooldownTimer = nil
-                    self.cooldown = false
-                end
-            )
+            self.cooldownTimer = timer.performWithDelay(self.cooldownTime, function()
+                self.cooldownTimer = nil
+                self.cooldown = false
+            end)
         end
     end
 end
@@ -197,11 +199,6 @@ end
 
 function Tower:pauseGame()
     self:setSequence("pause")
-
---[[ -- not needed but kept just in case
-    self.enemies = {}
-    physics.removeBody(self.rangeSensor)
- ]]
     if self.cooldownTimer then
         timer.pause(self.cooldownTimer)
     end
@@ -209,12 +206,6 @@ end
 
 function Tower:resumeGame()
     self:setSequence("resume")
-
---[[ -- not needed but kept just in case
-    physics.addBody(self.rangeSensor, "dynamic")
-    self.rangeSensor.isSensor = true
-    self.rangeSensor.isSleepingAllowed = false
- ]]
     if self.cooldownTimer then
         timer.resume(self.cooldownTimer)
     end

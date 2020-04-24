@@ -262,6 +262,8 @@ local function createDragEnemy()
         end
     end)
 
+    enemy.spwnTime = os.clock()
+    enemy.speed = 1
     enemy.pp = enemy
     enemy.HP = 100
     function enemy:hit(pts)
@@ -295,15 +297,15 @@ function scene:create(event)
     createDragEnemy()
 end
 
-function scene:destroy(event)
-    Runtime:dispatchEvent({name = "clearGame"})
-end
-
 function scene:show(event)
     local sceneGroup = self.view
     local phase = event.phase
 
     if (phase == "will") then
+        Runtime:addEventListener("EnemyKilledEvent", function(event)
+            print("triggered")
+            game:updateGold(event.target.reward)
+        end)
     end
 
     if (phase == "did") then
@@ -325,6 +327,11 @@ function scene:show(event)
         -- lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
         -- troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
     end
+end
+
+function scene:destroy(event)
+    Runtime:removeEventListener("EnemyKilledEvent")
+    Runtime:dispatchEvent({name = "clearGame"})
 end
 
 scene:addEventListener("create", scene)

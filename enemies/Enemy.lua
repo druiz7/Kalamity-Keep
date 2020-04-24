@@ -2,8 +2,6 @@ local Enemy = {displayGroup = display.newGroup(), tag = "enemy", name='Enemy', H
 
 local chars = require("assets.Chars")
 
-local components = require("scenes.components")
-
 function Enemy:new(o)    --constructor
 	o = o or {}; 
 	setmetatable(o, self);
@@ -21,6 +19,7 @@ function Enemy:spawn()
 	self.enemy.name = self.name; --name”
 	self.enemy.damage = self.damage; --damage”
 	self.enemy.HP = self.HP; --HP”
+	self.enemy.spwnTime = os.clock()
 
 	self.enemy.curX = 1
 	self.enemy.curY = math.floor(self.ySpawn/12/9)
@@ -55,9 +54,7 @@ end
 function Enemy:hit(damageNum)
 	self.HP = self.HP - damageNum
 	if (self.HP <= 0) then
-		transition.cancel(self.enemy)
-
-		self:death()
+		self:rewardPlayer()
 	end
 end
 
@@ -127,9 +124,10 @@ function Enemy:move(enemyPath)
 end
 
 -- custom event for the enemy dying
-function Enemy:death(event)
-	--something here to give the user money, take health from the user,  other actions for when the enemy either dies or reaches the end
+function Enemy:rewardPlayer(event)
+	transition.cancel(self.enemy)
 	self:clearGame()
+	Runtime:dispatchEvent({name="EnemyKilledEvent", target = self})
 end
 
 --> get the remaining health of the enemy
