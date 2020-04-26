@@ -25,7 +25,6 @@ function lizard:unit(x,y, logArr)
 end
 
 Runtime:addEventListener("pauseGame", function(event)
-    print("paused unit here")
     if (unitTimer) then
         print(unitTimer)
         timer.pause(unitTimer)
@@ -33,7 +32,13 @@ Runtime:addEventListener("pauseGame", function(event)
 end)
 
 Runtime:addEventListener("resumeGame", function(event)
-    print("resumed unit here")
+    if (unitTimer) then
+        print(unitTimer)
+        timer.resume(unitTimer)
+    end
+end)
+
+Runtime:addEventListener("clearGame", function(event)
     if (unitTimer) then
         print(unitTimer)
         timer.resume(unitTimer)

@@ -39,4 +39,11 @@ Runtime:addEventListener("resumeGame", function(event)
     end
 end)
 
+Runtime:addEventListener("clearGame", function(event)
+    if (unitTimer) then
+        print(unitTimer)
+        timer.resume(unitTimer)
+    end
+end)
+
 return troll
