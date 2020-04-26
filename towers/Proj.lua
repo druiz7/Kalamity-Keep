@@ -64,14 +64,18 @@ function Proj:clearGame()
 end
 
 function Proj:pauseGame()
-    if (self.shape.moving == true) then
-        transition.cancel(self.shape)
+    if (self.shape) then
+        if (self.shape.moving == true) then
+            transition.cancel(self.shape)
+        end
+        timer.pause(self.shape.tid)
     end
-    timer.pause(self.shape.tid)
 end
 
 function Proj:resumeGame()
-    timer.resume(self.shape.tid)
-end
+    if (self.shape) then
+        timer.resume(self.shape.tid)
+    end
+    end
 
 return Proj
