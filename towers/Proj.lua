@@ -56,8 +56,10 @@ function Proj:collision(event)
 end
 
 function Proj:clearGame()
-    self.shape:removeSelf()
-    self.shape = nil
+    if (self.shape) then    
+        self.shape:removeSelf()
+        self.shape = nil
+    end
     Runtime:removeEventListener("clearGame", self)
     Runtime:removeEventListener("pauseGame", self)
     Runtime:removeEventListener("resumeGame", self)
