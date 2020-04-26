@@ -243,39 +243,39 @@ local function wave3()
 end
 
 
-Runtime:addEventListener("paused", function(event)
-    print("paused game here")
+Runtime:addEventListener("pauseGame", function(event)
+    print("pauseGame game here")
     if (waveOne) then
         timer.pause(waveOne)
     end
 end)
-Runtime:addEventListener("resumed", function(event)
+Runtime:addEventListener("resumeGame", function(event)
     print("resumed game here")
     if (waveOne) then
         timer.resume(waveOne)
     end
 end)
 
-Runtime:addEventListener("paused", function(event)
-    print("paused game here")
+Runtime:addEventListener("pauseGame", function(event)
+    print("pauseGame game here")
     if (waveTwo) then
         timer.pause(waveTwo)
     end
 end)
-Runtime:addEventListener("resumed", function(event)
+Runtime:addEventListener("resumeGame", function(event)
     print("resumed game here")
     if (waveTwo) then
         timer.resume(waveTwo)
     end
 end)
 
-Runtime:addEventListener("paused", function(event)
-    print("paused game here")
+Runtime:addEventListener("pauseGame", function(event)
+    print("pauseGame game here")
     if (waveThree) then
         timer.pause(waveThree)
     end
 end)
-Runtime:addEventListener("resumed", function(event)
+Runtime:addEventListener("resumeGame", function(event)
     print("resumed game here")
     if (waveThree) then
         timer.resume(waveThree)
@@ -319,7 +319,6 @@ end
 
 function scene:resumeGame()
     Runtime:dispatchEvent({name = "resumeGame"})
-    Runtime:dispatchEvent({name = "resumed"})
     physics.start()
 end
 

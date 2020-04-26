@@ -23,7 +23,7 @@ function troll:unit(x,y, logArr)
 	end)
 end
 
-Runtime:addEventListener("paused", function(event)
+Runtime:addEventListener("pauseGame", function(event)
     print("paused unit here")
     if (unitTimer) then
         print(unitTimer)
@@ -31,7 +31,7 @@ Runtime:addEventListener("paused", function(event)
     end
 end)
 
-Runtime:addEventListener("resumed", function(event)
+Runtime:addEventListener("resumeGame", function(event)
     print("resumed unit here")
     if (unitTimer) then
         print(unitTimer)

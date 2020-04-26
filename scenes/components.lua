@@ -52,7 +52,6 @@ function _M.createPauseBtn(game)
     local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level, status = "paused"}};
     image:addEventListener("tap", function (event)
         Runtime:dispatchEvent({name = "pauseGame"})
-        Runtime:dispatchEvent({name="paused"})
         physics.pause()
         composer.showOverlay("scenes.pause", options );
     end)
