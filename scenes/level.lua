@@ -25,9 +25,12 @@ local troll = require("enemies.troll")
 local game
 local zone  
 
+--> initialize the wave variables, will hold the timers for each wave
 local waveOne
 local waveTwo
 local waveThree
+
+local enemyCount = 0 --> keep track of the number of enemies that were killed or reached the tower.
 
 local function zoneHandler(event)
     local zone = event.target
@@ -142,7 +145,10 @@ local function createBg()
     castle:addEventListener("collision", function(event)
         if event.phase == "began" and event.other.tag == "enemy" then
                 game:updateHealth(-event.other.damage)
+                enemyCount = enemyCount + 1
+                print("enemy count: " .. enemyCount)
                 event.other.pp:clearGame()
+                Runtime:dispatchEvent({name="checkWin"})
         end
     end)
 
@@ -243,42 +249,46 @@ local function wave3()
 end
 
 
+--> the following couple of functions are used to pause/resume the spawning of the units
 Runtime:addEventListener("pauseGame", function(event)
-    print("pauseGame game here")
     if (waveOne) then
         timer.pause(waveOne)
     end
 end)
 Runtime:addEventListener("resumeGame", function(event)
-    print("resumed game here")
     if (waveOne) then
         timer.resume(waveOne)
     end
 end)
 
 Runtime:addEventListener("pauseGame", function(event)
-    print("pauseGame game here")
     if (waveTwo) then
         timer.pause(waveTwo)
     end
 end)
 Runtime:addEventListener("resumeGame", function(event)
-    print("resumed game here")
     if (waveTwo) then
         timer.resume(waveTwo)
     end
 end)
 
 Runtime:addEventListener("pauseGame", function(event)
-    print("pauseGame game here")
     if (waveThree) then
         timer.pause(waveThree)
     end
 end)
 Runtime:addEventListener("resumeGame", function(event)
-    print("resumed game here")
     if (waveThree) then
         timer.resume(waveThree)
+    end
+end)
+
+
+--> Win Condition
+Runtime:addEventListener("checkWin", function(event)
+    if (enemyCount <= 43 and game.health > 0) then
+        print("You win!")
+        --function for when the enemy wins?
     end
 end)
 
@@ -345,7 +355,10 @@ function scene:show(event)
     if (phase == "will") then
         Runtime:addEventListener("EnemyKilledEvent", function(event)
             print("triggered")
+            enemyCount = enemyCount + 1 --> count up enemyCount for each enemy killed
+            print("enemy count: " .. enemyCount)
             game:updateGold(event.target.reward)
+            Runtime:dispatchEvent({name="checkWin"})
         end)
 
     end
