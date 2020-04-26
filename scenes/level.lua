@@ -25,7 +25,6 @@ local troll = require("enemies.troll")
 local game
 local zone  
 
-local waves = {}
 local waveOne
 local waveTwo
 local waveThree
