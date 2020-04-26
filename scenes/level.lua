@@ -146,7 +146,6 @@ local function createBg()
         if event.phase == "began" and event.other.tag == "enemy" then
                 game:updateHealth(-event.other.damage)
                 enemyCount = enemyCount + 1
-                print("enemy count: " .. enemyCount)
                 event.other.pp:clearGame()
                 Runtime:dispatchEvent({name="checkWin"})
         end
@@ -235,7 +234,7 @@ end
 -- 2 waves of barbarians
 -- wave of speedy lizards
 local function wave2()
-    wave1()
+    wave1()                       
     waveTwo = timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
@@ -244,8 +243,8 @@ end
 -- wave of speedy lizards
 -- spawn trolls
 local function wave3()
-    wave2()
-    waveThree = timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+    wave2()                            
+    waveThree = timer.performWithDelay(1000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
 
@@ -260,6 +259,11 @@ Runtime:addEventListener("resumeGame", function(event)
         timer.resume(waveOne)
     end
 end)
+Runtime:addEventListener("clearGame", function(event)
+    if (waveOne) then
+        timer.cancel(waveOne)
+    end
+end)
 
 Runtime:addEventListener("pauseGame", function(event)
     if (waveTwo) then
@@ -269,6 +273,11 @@ end)
 Runtime:addEventListener("resumeGame", function(event)
     if (waveTwo) then
         timer.resume(waveTwo)
+    end
+end)
+Runtime:addEventListener("clearGame", function(event)
+    if (waveTwo) then
+        timer.cancel(waveTwo)
     end
 end)
 
@@ -282,13 +291,19 @@ Runtime:addEventListener("resumeGame", function(event)
         timer.resume(waveThree)
     end
 end)
+Runtime:addEventListener("clearGame", function(event)
+    if (waveThree) then
+        timer.cancel(waveThree)
+    end
+end)
 
 
 --> Win Condition
 Runtime:addEventListener("checkWin", function(event)
-    if (enemyCount <= 43 and game.health > 0) then
-        print("You win!")
-        --function for when the enemy wins?
+    if (enemyCount >= 43 and game.health > 0) then
+        Runtime:dispatchEvent({name = "clearGame"})
+        enemyCount = 0;
+        composer.gotoScene("scenes.End_Screen", {effect = "fade", time = 250});
     end
 end)
 
@@ -356,7 +371,6 @@ function scene:show(event)
         Runtime:addEventListener("EnemyKilledEvent", function(event)
             print("triggered")
             enemyCount = enemyCount + 1 --> count up enemyCount for each enemy killed
-            print("enemy count: " .. enemyCount)
             game:updateGold(event.target.reward)
             Runtime:dispatchEvent({name="checkWin"})
         end)
@@ -367,7 +381,6 @@ function scene:show(event)
         --pull coordinates to start spawn from the level-data.json file
 
         wave1()
-
         timer.performWithDelay(33000, function() wave2() end)
         timer.performWithDelay(67000, function() wave3() end)
     end
