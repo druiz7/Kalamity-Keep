@@ -23,7 +23,12 @@ local lizard = require("enemies.lizard")
 local troll = require("enemies.troll")
 
 local game
-local zone
+local zone  
+
+local waves = {}
+local waveOne
+local waveTwo
+local waveThree
 
 local function zoneHandler(event)
     local zone = event.target
@@ -192,7 +197,6 @@ local function createMenuBtns()
     sceneGroup:insert(game.gui_gold)
     sceneGroup:insert(game.gui_health)
     sceneGroup:insert(game.gui_pause)
-
 end
 
 local function setUpGameObj(level)
@@ -219,7 +223,7 @@ end
 -- round 1
 -- 2 waves of barbarians
 local function wave1()
-    timer.performWithDelay(4000, function() barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end, 2)
+    waveOne = timer.performWithDelay(4000, function() barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end, 2)
 end
 
 -- round 2
@@ -227,19 +231,57 @@ end
 -- wave of speedy lizards
 local function wave2()
     wave1()
-    timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
-end
-
-local function wave3()
-    wave2()
-    timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+    waveTwo = timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
 -- round 3
 -- 2 waves of barbarians
 -- wave of speedy lizards
 -- spawn trolls
+local function wave3()
+    wave2()
+    waveThree = timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+end
 
+
+Runtime:addEventListener("paused", function(event)
+    print("paused game here")
+    if (waveOne) then
+        timer.pause(waveOne)
+    end
+end)
+Runtime:addEventListener("resumed", function(event)
+    print("resumed game here")
+    if (waveOne) then
+        timer.resume(waveOne)
+    end
+end)
+
+Runtime:addEventListener("paused", function(event)
+    print("paused game here")
+    if (waveTwo) then
+        timer.pause(waveTwo)
+    end
+end)
+Runtime:addEventListener("resumed", function(event)
+    print("resumed game here")
+    if (waveTwo) then
+        timer.resume(waveTwo)
+    end
+end)
+
+Runtime:addEventListener("paused", function(event)
+    print("paused game here")
+    if (waveThree) then
+        timer.pause(waveThree)
+    end
+end)
+Runtime:addEventListener("resumed", function(event)
+    print("resumed game here")
+    if (waveThree) then
+        timer.resume(waveThree)
+    end
+end)
 
 local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
@@ -278,6 +320,7 @@ end
 
 function scene:resumeGame()
     Runtime:dispatchEvent({name = "resumeGame"})
+    Runtime:dispatchEvent({name = "resumed"})
     physics.start()
 end
 
@@ -306,26 +349,16 @@ function scene:show(event)
             print("triggered")
             game:updateGold(event.target.reward)
         end)
+
     end
 
     if (phase == "did") then
         --pull coordinates to start spawn from the level-data.json file
 
-        print(event.params.level)
-
-        print("x position: " .. game.path.x + game.path.verticies[1] + 65)
-        print("y position: " .. game.path.y + game.path.verticies[2] + 40)
-
         wave1()
 
         timer.performWithDelay(33000, function() wave2() end)
-
         timer.performWithDelay(67000, function() wave3() end)
-
-
-        -- barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
-        -- lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
-        -- troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
     end
 end
 
