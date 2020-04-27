@@ -247,65 +247,65 @@ local function wave3()
     waveThree = timer.performWithDelay(1000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
+--> the following couple of functions are used to pause/resume the spawning of the units and various other events
+local function setUpGameEvents()
+    function game:pauseGame(event)
+        if (waveOne) then
+            timer.pause(waveOne)
+        end
 
---> the following couple of functions are used to pause/resume the spawning of the units
-Runtime:addEventListener("pauseGame", function(event)
-    if (waveOne) then
-        timer.pause(waveOne)
-    end
-end)
-Runtime:addEventListener("resumeGame", function(event)
-    if (waveOne) then
-        timer.resume(waveOne)
-    end
-end)
-Runtime:addEventListener("clearGame", function(event)
-    if (waveOne) then
-        timer.cancel(waveOne)
-    end
-end)
+        if (waveTwo) then
+            timer.pause(waveTwo)
+        end
 
-Runtime:addEventListener("pauseGame", function(event)
-    if (waveTwo) then
-        timer.pause(waveTwo)
+        if (waveThree) then
+            timer.pause(waveThree)
+        end
     end
-end)
-Runtime:addEventListener("resumeGame", function(event)
-    if (waveTwo) then
-        timer.resume(waveTwo)
-    end
-end)
-Runtime:addEventListener("clearGame", function(event)
-    if (waveTwo) then
-        timer.cancel(waveTwo)
-    end
-end)
 
-Runtime:addEventListener("pauseGame", function(event)
-    if (waveThree) then
-        timer.pause(waveThree)
-    end
-end)
-Runtime:addEventListener("resumeGame", function(event)
-    if (waveThree) then
-        timer.resume(waveThree)
-    end
-end)
-Runtime:addEventListener("clearGame", function(event)
-    if (waveThree) then
-        timer.cancel(waveThree)
-    end
-end)
+    function game:resumeGame(event)
+        if (waveOne) then
+            timer.resume(waveOne)
+        end
 
+        if (waveTwo) then
+            timer.resume(waveTwo)
+        end
 
---> Win Condition
-Runtime:addEventListener("checkWin", function(event)
-    if (enemyCount >= 43 and game.health > 0) then
-        Runtime:dispatchEvent({name = "clearGame"})
-        enemyCount = 0;
-        composer.gotoScene("scenes.End_Screen", {effect = "fade", time = 250});
+        if (waveThree) then
+            timer.resume(waveThree)
+        end
     end
-end)
+
+    function game:clearGame(event)
+        if (waveOne) then
+            timer.cancel(waveOne)
+        end
+
+        if (waveTwo) then
+            timer.cancel(waveTwo)
+        end
+
+        if (waveThree) then
+            timer.cancel(waveThree)
+        end
+    end
+
+    --> Win Condition
+    function game:checkWin(event)
+        if (enemyCount >= 43 and game.health > 0) then
+            Runtime:dispatchEvent({name = "clearGame"})
+            enemyCount = 0;
+            composer.gotoScene("scenes.End_Screen", {effect = "fade", time = 250});
+        end
+    end
+
+    function game:EnemyKilledEvent(event)
+        enemyCount = enemyCount + 1 --> count up enemyCount for each enemy killed
+        game:updateGold(event.target.reward)
+        Runtime:dispatchEvent({name="checkWin"})
+    end
+end
 
 local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
@@ -354,13 +354,14 @@ function scene:create(event)
     createBg()
     createTowerBtns()
     createMenuBtns()
+    setUpGameEvents()
 
     Tower.displayGroup = display.newGroup()
     Enemy.displayGroup = display.newGroup()
     sceneGroup:insert(Tower.displayGroup)
     sceneGroup:insert(Enemy.displayGroup)
 
-    createDragEnemy()
+    --createDragEnemy()
 end
 
 function scene:show(event)
@@ -368,13 +369,11 @@ function scene:show(event)
     local phase = event.phase
 
     if (phase == "will") then
-        Runtime:addEventListener("EnemyKilledEvent", function(event)
-            print("triggered")
-            enemyCount = enemyCount + 1 --> count up enemyCount for each enemy killed
-            game:updateGold(event.target.reward)
-            Runtime:dispatchEvent({name="checkWin"})
-        end)
-
+        Runtime:addEventListener("EnemyKilledEvent", game)
+        Runtime:addEventListener("checkWin", game)
+        Runtime:addEventListener("pauseGame", game)
+        Runtime:addEventListener("resumeGame", game)
+        Runtime:addEventListener("clearGame", game)
     end
 
     if (phase == "did") then
@@ -387,8 +386,12 @@ function scene:show(event)
 end
 
 function scene:destroy(event)
-    Runtime:removeEventListener("EnemyKilledEvent")
     Runtime:dispatchEvent({name = "clearGame"})
+    Runtime:removeEventListener("EnemyKilledEvent", game)
+    Runtime:removeEventListener("checkWin", game)
+    Runtime:removeEventListener("pauseGame", game)
+    Runtime:removeEventListener("resumeGame", game)
+    Runtime:removeEventListener("clearGame", game)
 end
 
 scene:addEventListener("create", scene)
