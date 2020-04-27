@@ -29,6 +29,7 @@ local zone
 local waveOne
 local waveTwo
 local waveThree
+local timer2, timer3
 
 local enemyCount = 0 --> keep track of the number of enemies that were killed or reached the tower.
 
