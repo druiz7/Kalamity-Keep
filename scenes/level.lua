@@ -244,7 +244,7 @@ end
 -- spawn trolls
 local function wave3()
     wave2()                            
-    waveThree = timer.performWithDelay(1000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+    waveThree = timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
 --> the following couple of functions are used to pause/resume the spawning of the units and various other events
@@ -261,6 +261,14 @@ local function setUpGameEvents()
         if (waveThree) then
             timer.pause(waveThree)
         end
+
+        if (timer2) then
+            timer.pause(timer2)
+        end
+
+        if (timer3) then
+            timer.pause(timer3)
+        end
     end
 
     function game:resumeGame(event)
@@ -275,6 +283,14 @@ local function setUpGameEvents()
         if (waveThree) then
             timer.resume(waveThree)
         end
+
+        if (timer2) then
+            timer.resume(timer2)
+        end
+
+        if (timer3) then
+            timer.resume(timer3)
+        end
     end
 
     function game:clearGame(event)
@@ -288,6 +304,14 @@ local function setUpGameEvents()
 
         if (waveThree) then
             timer.cancel(waveThree)
+        end
+
+        if (timer2) then
+            timer.cancel(timer2)
+        end
+
+        if (timer3) then
+            timer.cancel(timer3)
         end
     end
 
@@ -380,8 +404,8 @@ function scene:show(event)
         --pull coordinates to start spawn from the level-data.json file
 
         wave1()
-        timer.performWithDelay(33000, function() wave2() end)
-        timer.performWithDelay(67000, function() wave3() end)
+        timer2 = timer.performWithDelay(33000, function() wave2() end)
+        timer3 = timer.performWithDelay(67000, function() wave3() end)
     end
 end
 
