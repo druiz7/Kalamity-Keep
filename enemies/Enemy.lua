@@ -1,4 +1,4 @@
-local Enemy = {displayGroup = display.newGroup(), tag = "enemy", name='Enemy', HP=1, damage=1, speed=1, path={}, reward=50, xSpawn=0, ySpawn=0};
+local Enemy = {displayGroup = display.newGroup(), tag = "enemy", name='Enemy', HP=1, damage=1, speed=1, path={}, reward=10, xSpawn=0, ySpawn=0};
 
 local chars = require("assets.Chars")
 

@@ -1,6 +1,6 @@
 local ShortRange = require("towers.ShortRange")
 
-local Knight = ShortRange:new({sheetName="knight_blue", damage=3, cooldownTime=1000, stamina=5})
+local Knight = ShortRange:new({sheetName = "knight_blue", damage = 1, cooldownTime = 1000, stamina = 5})
 
 function Knight:new(o)
    o = ShortRange:new(o)

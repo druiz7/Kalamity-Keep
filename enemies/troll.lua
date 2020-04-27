@@ -1,6 +1,6 @@
 local Enemy = require("enemies.Enemy")
 
-local troll = Enemy:new( {name='troll', HP=3, damage=3, speed=.5} )
+local troll = Enemy:new( {name='troll', HP=15, damage=30, speed=0.5, reward=25} )
 
 function troll:new(o)    --constructor
 	o = o or {}; 
