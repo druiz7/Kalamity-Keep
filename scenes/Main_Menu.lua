@@ -50,7 +50,7 @@ function scene:create( event )
         composer.gotoScene("scenes.level", {effect = "fade", time = 250, params = {level="level2"}});
     end);
     lore:addEventListener("tap", function()
-        composer.gotoScene("scenes.lore", {effect = "fade", time = 250, params = {page = "lorepg1"}});
+        composer.gotoScene("scenes.lorepages.lorepg1", {effect = "fade", time = 250});
     end);
     exitButton:addEventListener("tap", function()
         native.requestExit();
