@@ -9,19 +9,36 @@ function troll:new(o)    --constructor
 	return o;
 end
 
+local unitTimer
+
 function troll:unit(x,y, logArr)
     pcall( 
 		function()
-		print("troll troop")
-		print("x: " .. x)
-		print("y: " .. y)
-		timer.performWithDelay(800, 
+		unitTimer = timer.performWithDelay(800, 
 			function() 
-				print("summon barbarian here")
 				local troll = self:new({xSpawn=x, ySpawn=y})
-				troll:spawn(logArr)
+				troll:spawn()
+				troll:move(logArr)
 			end,3)
 	end)
 end
+
+Runtime:addEventListener("pauseGame", function(event)
+    if (unitTimer) then
+        timer.pause(unitTimer)
+    end
+end)
+
+Runtime:addEventListener("resumeGame", function(event)
+    if (unitTimer) then
+        timer.resume(unitTimer)
+    end
+end)
+
+Runtime:addEventListener("clearGame", function(event)
+    if (unitTimer) then
+        timer.resume(unitTimer)
+    end
+end)
 
 return troll

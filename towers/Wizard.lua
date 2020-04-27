@@ -7,7 +7,7 @@ local Wizard =
       damage = 5,
       cooldownTime = 1500,
       projColor = {50 / 255, 74 / 255, 168 / 255},
-      range = 2,
+      range = 1,
       stamina = 2
    }
 )

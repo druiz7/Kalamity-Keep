@@ -10,20 +10,37 @@ function lizard:new(o)    --constructor
 	return o;
 end
 
+local unitTimer
+
 function lizard:unit(x,y, logArr)
     pcall( 
 		function()
-		print("barb troop")
-		print("x: " .. x)
-		print("y: " .. y)
-		timer.performWithDelay(800, 
-			function() 
-				print("summon barbarian here")
-				local liz = self:new({xSpawn=x, ySpawn=y})
-				liz:spawn(logArr)
-			end,5)
-	end)
+			unitTimer = timer.performWithDelay(800, 
+				function()
+					local liz = self:new({xSpawn=x, ySpawn=y})
+					liz:spawn()
+					liz:move(logArr)
+				end,5)
+		end)
 end
+
+Runtime:addEventListener("pauseGame", function(event)
+    if (unitTimer) then
+        timer.pause(unitTimer)
+    end
+end)
+
+Runtime:addEventListener("resumeGame", function(event)
+    if (unitTimer) then
+        timer.resume(unitTimer)
+    end
+end)
+
+Runtime:addEventListener("clearGame", function(event)
+    if (unitTimer) then
+        timer.resume(unitTimer)
+    end
+end)
 
 
 return lizard;

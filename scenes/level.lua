@@ -23,7 +23,15 @@ local lizard = require("enemies.lizard")
 local troll = require("enemies.troll")
 
 local game
-local zone
+local zone  
+
+--> initialize the wave variables, will hold the timers for each wave
+local waveOne
+local waveTwo
+local waveThree
+local timer2, timer3
+
+local enemyCount = 0 --> keep track of the number of enemies that were killed or reached the tower.
 
 local function zoneHandler(event)
     local zone = event.target
@@ -38,9 +46,6 @@ local function zoneHandler(event)
     clickPosY = clickPosY + 450
     clickPosX = math.ceil(clickPosX / 130)
     clickPosY = math.ceil(clickPosY / 100)
-
-    --print(clickPosX);
-    --print(clickPosY);
 
     --Converts the clickPos coordinates back into x,y coordinates
     local _x, _y = zone:localToContent(-715 + 130 * (clickPosX - 1), -400 + 100 * (clickPosY - 1))
@@ -141,7 +146,9 @@ local function createBg()
     castle:addEventListener("collision", function(event)
         if event.phase == "began" and event.other.tag == "enemy" then
                 game:updateHealth(-event.other.damage)
+                enemyCount = enemyCount + 1
                 event.other.pp:clearGame()
+                Runtime:dispatchEvent({name="checkWin"})
         end
     end)
 
@@ -195,7 +202,6 @@ local function createMenuBtns()
     sceneGroup:insert(game.gui_gold)
     sceneGroup:insert(game.gui_health)
     sceneGroup:insert(game.gui_pause)
-
 end
 
 local function setUpGameObj(level)
@@ -222,27 +228,109 @@ end
 -- round 1
 -- 2 waves of barbarians
 local function wave1()
-    timer.performWithDelay(4000, function() barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end, 2)
+    waveOne = timer.performWithDelay(4000, function() barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end, 2)
 end
 
 -- round 2
 -- 2 waves of barbarians
 -- wave of speedy lizards
 local function wave2()
-    wave1()
-    timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
-end
-
-local function wave3()
-    wave2()
-    timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+    wave1()                       
+    waveTwo = timer.performWithDelay(12000, function() lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
 end
 
 -- round 3
 -- 2 waves of barbarians
 -- wave of speedy lizards
 -- spawn trolls
+local function wave3()
+    wave2()                            
+    waveThree = timer.performWithDelay(10000, function() troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr) end)
+end
 
+--> the following couple of functions are used to pause/resume the spawning of the units and various other events
+local function setUpGameEvents()
+    function game:pauseGame(event)
+        if (waveOne) then
+            timer.pause(waveOne)
+        end
+
+        if (waveTwo) then
+            timer.pause(waveTwo)
+        end
+
+        if (waveThree) then
+            timer.pause(waveThree)
+        end
+
+        if (timer2) then
+            timer.pause(timer2)
+        end
+
+        if (timer3) then
+            timer.pause(timer3)
+        end
+    end
+
+    function game:resumeGame(event)
+        if (waveOne) then
+            timer.resume(waveOne)
+        end
+
+        if (waveTwo) then
+            timer.resume(waveTwo)
+        end
+
+        if (waveThree) then
+            timer.resume(waveThree)
+        end
+
+        if (timer2) then
+            timer.resume(timer2)
+        end
+
+        if (timer3) then
+            timer.resume(timer3)
+        end
+    end
+
+    function game:clearGame(event)
+        if (waveOne) then
+            timer.cancel(waveOne)
+        end
+
+        if (waveTwo) then
+            timer.cancel(waveTwo)
+        end
+
+        if (waveThree) then
+            timer.cancel(waveThree)
+        end
+
+        if (timer2) then
+            timer.cancel(timer2)
+        end
+
+        if (timer3) then
+            timer.cancel(timer3)
+        end
+    end
+
+    --> Win Condition
+    function game:checkWin(event)
+        if (enemyCount >= 43 and game.health > 0) then
+            Runtime:dispatchEvent({name = "clearGame"})
+            enemyCount = 0;
+            composer.gotoScene("scenes.End_Screen", {effect = "fade", time = 250});
+        end
+    end
+
+    function game:EnemyKilledEvent(event)
+        enemyCount = enemyCount + 1 --> count up enemyCount for each enemy killed
+        game:updateGold(event.target.reward)
+        Runtime:dispatchEvent({name="checkWin"})
+    end
+end
 
 local function createDragEnemy()
     local enemy = display.newRect(sceneGroup, display.contentCenterX + 300, display.contentCenterY, 150, 150)
@@ -265,6 +353,8 @@ local function createDragEnemy()
         end
     end)
 
+    enemy.spwnTime = os.clock()
+    enemy.speed = 1
     enemy.pp = enemy
     enemy.HP = 100
     function enemy:hit(pts)
@@ -289,6 +379,7 @@ function scene:create(event)
     createBg()
     createTowerBtns()
     createMenuBtns()
+    setUpGameEvents()
 
     Tower.displayGroup = display.newGroup()
     Enemy.displayGroup = display.newGroup()
@@ -298,36 +389,34 @@ function scene:create(event)
     --createDragEnemy()
 end
 
-function scene:destroy(event)
-    Runtime:dispatchEvent({name = "clearGame"})
-end
-
 function scene:show(event)
     local sceneGroup = self.view
     local phase = event.phase
 
     if (phase == "will") then
+        Runtime:addEventListener("EnemyKilledEvent", game)
+        Runtime:addEventListener("checkWin", game)
+        Runtime:addEventListener("pauseGame", game)
+        Runtime:addEventListener("resumeGame", game)
+        Runtime:addEventListener("clearGame", game)
     end
 
     if (phase == "did") then
         --pull coordinates to start spawn from the level-data.json file
 
-        print(event.params.level)
-
-        print("x position: " .. game.path.x + game.path.verticies[1] + 65)
-        print("y position: " .. game.path.y + game.path.verticies[2] + 40)
-
         wave1()
-
-        timer.performWithDelay(33000, function() wave2() end)
-
-        timer.performWithDelay(67000, function() wave3() end)
-
-
-        -- barbarian:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
-        -- lizard:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
-        -- troll:unit(game.path.x + game.path.verticies[1] + 65, game.path.y + game.path.verticies[2] + 40, game.logArr)
+        timer2 = timer.performWithDelay(33000, function() wave2() end)
+        timer3 = timer.performWithDelay(67000, function() wave3() end)
     end
+end
+
+function scene:destroy(event)
+    Runtime:dispatchEvent({name = "clearGame"})
+    Runtime:removeEventListener("EnemyKilledEvent", game)
+    Runtime:removeEventListener("checkWin", game)
+    Runtime:removeEventListener("pauseGame", game)
+    Runtime:removeEventListener("resumeGame", game)
+    Runtime:removeEventListener("clearGame", game)
 end
 
 scene:addEventListener("create", scene)

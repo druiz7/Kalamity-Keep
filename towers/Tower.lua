@@ -104,25 +104,12 @@ function Tower:createRange()
         local enemyTriggered = event.other
         if (event.phase == "began") then
             -- add enemy to enemies list
-            local inTable = false
-            for _, enemy in pairs(self.enemies) do
-                if enemy == enemyTriggered then
-                    print("enemy already in list")
-                    inTable = true
-                    break
-                end
-            end
-
-            if (not inTable) then
-                print("inserted to table")
-                table.insert(self.enemies, enemyTriggered)
-            end
+            table.insert(self.enemies, enemyTriggered)
         elseif (event.phase == "ended") then
-            print("removing enemy from list")
             -- remove enemy from enemies list
             for i, enemy in pairs(self.enemies) do
                 if (enemy == enemyTriggered) then
-                    self.enemies[i] = nil
+                    table.remove(self.enemies, i)
                 end
             end
         end
@@ -130,9 +117,17 @@ function Tower:createRange()
 end
 
 function Tower:getEnemy()
-    local enemy
-    if (#self.enemies > 0) then
-        enemy = self.enemies[math.random(#self.enemies)]
+    if #self.enemies == 0 then return nil end
+
+    -- gets enemy with furthest dist
+    local currTime = os.clock()
+    local enemy, larDist
+    for _, e in pairs(self.enemies) do
+        local eDist = (currTime - e.spwnTime) * e.pp.speed
+        if(not enemy or eDist > larDist) then
+            enemy = e
+            larDist = eDist
+        end
     end
 
     return enemy
@@ -141,7 +136,7 @@ end
 function Tower:updateEnemies()
     -- updates the list of enemies to make sure they are all alive
     for index, enemy in pairs(self.enemies) do
-        if enemy and enemy.pp and (enemy.pp.HP < 1) then
+        if enemy and ((enemy.pp.HP < 1) or enemy.removed) then
             self.enemies[index] = nil
         end
     end
@@ -169,14 +164,10 @@ function Tower:attackEnemy()
             self.cooldown = true
             self:attack(targ)
 
-            self.cooldownTimer =
-                timer.performWithDelay(
-                self.cooldownTime,
-                function()
-                    self.cooldownTimer = nil
-                    self.cooldown = false
-                end
-            )
+            self.cooldownTimer = timer.performWithDelay(self.cooldownTime, function()
+                self.cooldownTimer = nil
+                self.cooldown = false
+            end)
         end
     end
 end
@@ -208,11 +199,6 @@ end
 
 function Tower:pauseGame()
     self:setSequence("pause")
-
---[[ -- not needed but kept just in case
-    self.enemies = {}
-    physics.removeBody(self.rangeSensor)
- ]]
     if self.cooldownTimer then
         timer.pause(self.cooldownTimer)
     end
@@ -220,12 +206,6 @@ end
 
 function Tower:resumeGame()
     self:setSequence("resume")
-
---[[ -- not needed but kept just in case
-    physics.addBody(self.rangeSensor, "dynamic")
-    self.rangeSensor.isSensor = true
-    self.rangeSensor.isSleepingAllowed = false
- ]]
     if self.cooldownTimer then
         timer.resume(self.cooldownTimer)
     end

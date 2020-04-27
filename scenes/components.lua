@@ -34,6 +34,7 @@ function _M.createHealth(game)
             self.health = 0
             local options = { isModal = true, effect = "crossFade", time = 300, params = {level = game.level, status = "lost"}};
             Runtime:dispatchEvent({name = "pauseGame"})
+            Runtime:dispatchEvent({name = "paused"})
             physics.pause()
             composer.showOverlay("scenes.pause", options );
         end
