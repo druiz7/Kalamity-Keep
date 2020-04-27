@@ -216,7 +216,7 @@ local function setUpGameObj(level)
     game = dataRead[level]
     game.level = level
     game.towerType = ""
-    game.gold = 500
+    game.gold = 250
     game.health = 100
     game.towerAtr = {
         Wizard = {cost = 150},

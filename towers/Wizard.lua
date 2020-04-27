@@ -4,10 +4,9 @@ local Wizard =
    LongRange:new(
    {
       sheetName = "wizard",
-      damage = 5,
+      damage = 7,
       cooldownTime = 1500,
       projColor = {50 / 255, 74 / 255, 168 / 255},
-      range = 1,
       stamina = 2
    }
 )
