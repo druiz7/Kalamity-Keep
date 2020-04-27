@@ -73,13 +73,13 @@ local function createBg()
     local bg = display.newRect(0, 0, 1920, 1080)
     bg.anchorX = 0; bg.anchorY = 0;
     if lore.page == "lorepg1"  then
-        bg.fill = {type = "image", filename = "assets/tiles/backgrounds/lorepg1.png"};
+        bg.fill = {type = "image", filename = "assets/backgrounds/lorepg1.png"};
     elseif lore.page == "lorepg2"  then
-        bg.fill = {type = "image", filename = "assets/tiles/backgrounds/lorepg2.png"};
+        bg.fill = {type = "image", filename = "assets/backgrounds/lorepg2.png"};
     elseif lore.page == "lorepg3"  then
-        bg.fill = {type = "image", filename = "assets/tiles/backgrounds/lorepg3.png"};
+        bg.fill = {type = "image", filename = "assets/backgrounds/lorepg3.png"};
     elseif lore.page == "lorepg4"  then
-        bg.fill = {type = "image", filename = "assets/tiles/backgrounds/lorepg4.png"};
+        bg.fill = {type = "image", filename = "assets/backgrounds/lorepg4.png"};
     end
     sceneGroup:insert(bg)
 end
