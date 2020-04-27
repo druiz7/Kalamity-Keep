@@ -10,7 +10,9 @@ function ShortRange:new(o)
 end
 
 function ShortRange:attack(enemy)
-    enemy.pp:hit(self.damage)
+    for _, enemy in pairs(self.enemies) do
+        enemy.pp:hit(self.damage)
+    end
 end
 
 return ShortRange

@@ -24,7 +24,6 @@ function Proj:chase()
         if not (self.enemy and not self.enemy.removed and pcall(function () self:chaseIt() end)) then
             if (self.shape) then
                 pcall(function()
-                    print("remove projectile")
                     timer.cancel(self.shape.tid)
                     self.shape:removeSelf()
                     self.shape = nil

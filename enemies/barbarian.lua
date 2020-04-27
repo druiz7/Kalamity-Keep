@@ -26,20 +26,17 @@ end
 
 Runtime:addEventListener("pauseGame", function(event)
     if (unitTimer) then
-        print(unitTimer)
         timer.pause(unitTimer)
     end
 end)
 Runtime:addEventListener("resumeGame", function(event)
     if (unitTimer) then
-        print(unitTimer)
         timer.resume(unitTimer)
     end
 end)
 
 Runtime:addEventListener("clearGame", function(event)
     if (unitTimer) then
-        print(unitTimer)
         timer.resume(unitTimer)
     end
 end)
