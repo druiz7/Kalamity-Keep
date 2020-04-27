@@ -1,0 +1,30 @@
+{
+    "lorepg1":{
+        "bg":{"x": 0, "y": 0, "width": 1920, "height": 1080, "anchorX": 0, "anchorY": 0 }, 
+        "nextbtn":{"x": 1670, "y": 980, "width": 180, "height": 120},
+        "menubtn":{"x": 1820, "y": 100 , "width": 102, "height": 102}
+    },
+    "lorepg2":{
+        "bg":{"x": 0, "y": 0, "width": 1920, "height": 1080, "anchorX": 0, "anchorY": 0 },
+        "prevbtn":{}, 
+        "nextbtn":{"x": 1670, "y": 980, "width": 180, "height": 120},
+        "menubtn":{"x": 1820, "y": 100 , "width": 102, "height": 102}, 
+        "sprite1": {"x": 480, "y": 800}, 
+        "sprite2":{"x": 1440, "y": 800}
+    },
+    "lorepg3":{
+        "bg":{"x": 0, "y": 0, "width": 1920, "height": 1080, "anchorX": 0, "anchorY": 0 },
+        "prevbtn":{"x": 240, "y": 980, "width": 180, "height": 120}, 
+        "nextbtn":{"x": 1670, "y": 980, "width": 180, "height": 120},
+        "menubtn":{"x": 1820, "y": 100 , "width": 102, "height": 102}, 
+        "sprite1": {"x": 480, "y": 800}, 
+        "sprite2":{"x": 1440, "y": 800}
+    },
+    "lorepg4":{
+        "bg":{"x": 0, "y": 0, "width": 1920, "height": 1080, "anchorX": 0, "anchorY": 0 },
+        "prevbtn":{"x": 240, "y": 980, "width": 180, "height": 120},
+        "menubtn":{"x": 1820, "y": 100 , "width": 102, "height": 102}, 
+        "sprite1": {"x": 480, "y": 800}, 
+        "sprite2":{"x": 1440, "y": 800}
+    }
+}

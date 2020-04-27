@@ -295,7 +295,7 @@ function scene:create(event)
     sceneGroup:insert(Tower.displayGroup)
     sceneGroup:insert(Enemy.displayGroup)
 
-    createDragEnemy()
+    --createDragEnemy()
 end
 
 function scene:destroy(event)
