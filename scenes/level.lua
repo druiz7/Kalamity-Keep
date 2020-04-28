@@ -138,9 +138,7 @@ local function createBg()
     castle = display.newRect(castle.x, castle.y, castle.width, castle.height)
     castle.anchorX = 0
     castle.anchorY = 0
-    castle.fill = {type = "image", filename = "assets/tiles/wood.png"}
-    castle.fill.scaleX = 256 / castle.width
-    castle.fill.scaleY = 256 / castle.height
+    castle.fill = {type = "image", filename = "assets/tiles/castle.png"}
     castle:setStrokeColor(0, 0, 0)
     castle.strokeWidth = 4
     physics.addBody(castle, "dynamic", {isSensor = true})
@@ -422,7 +420,7 @@ function scene:destroy(event)
     Runtime:removeEventListener("pauseGame", game)
     Runtime:removeEventListener("resumeGame", game)
     Runtime:removeEventListener("clearGame", game)
-    
+
     audio.stop(1)
     audio.dispose(audioHandle)
 end
