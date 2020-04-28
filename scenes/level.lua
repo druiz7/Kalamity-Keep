@@ -7,6 +7,7 @@ physics.start()
 physics.setGravity(0, 0)
 
 local composer = require("composer")
+local audio = require("audio")
 local scene = composer.newScene()
 local sceneGroup
 
@@ -407,6 +408,10 @@ function scene:show(event)
         wave1()
         timer2 = timer.performWithDelay(33000, function() wave2() end)
         timer3 = timer.performWithDelay(67000, function() wave3() end)
+
+        local audioHandle = audio.loadStream("Battle Trance.wav")
+        audio.play(audioHandle, {channel = 1, loops = -1, fadein = 500})
+        audio.setVolume(0.15)
     end
 end
 
@@ -417,6 +422,9 @@ function scene:destroy(event)
     Runtime:removeEventListener("pauseGame", game)
     Runtime:removeEventListener("resumeGame", game)
     Runtime:removeEventListener("clearGame", game)
+    
+    audio.stop(1)
+    audio.dispose(audioHandle)
 end
 
 scene:addEventListener("create", scene)

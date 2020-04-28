@@ -1,4 +1,5 @@
 local composer = require("composer");
+local audio = require("audio")
 
 local scene = composer.newScene()
 
@@ -63,10 +64,20 @@ end
 function scene:show(event)
     if event.phase == "did" then
         composer.removeScene("scenes.level")
+        local audioHandle = audio.loadStream("Tune of Peace.wav")
+        audio.play(audioHandle, {channel = 1, loops = -1, fadein = 500})
+        audio.setVolume(0.15)
+    end
+end
+function scene:hide(event)
+    if event.phase == "did" then
+        audio.stop(1)
+        audio.dispose(audioHandle)
     end
 end
 
 scene:addEventListener("show", scene)
+scene:addEventListener("hide", scene)
 scene:addEventListener("create", scene)
 
 return scene
